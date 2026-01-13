@@ -22,6 +22,10 @@ Add an active prompt (via the admin UI) by going to:
 
 - http://127.0.0.1:8000/admin/
 
+Simple UI (no build tools):
+
+- http://127.0.0.1:8000/app/
+
 ## Docker (SQLite persistence)
 
 Build the image:
