@@ -46,7 +46,7 @@ class TutorResponseHandler:
             **(llm_response.get('metadata') or {}),
             'prompt_version_id': system_prompt.prompt_id,
         }
-        self.history_service.append_turn(
+        turn = self.history_service.append_turn(
             conversation_id=conversation_id,
             user_id=user_id,
             user_text=question_text,
@@ -56,7 +56,6 @@ class TutorResponseHandler:
 
         return {
             'conversation_id': conversation_id,
-            'raw_model_response': llm_response.get('raw_response', {}),
+            'turn_index': turn.turn_index,
             'tutor_response': llm_response.get('assistant_text', ''),
-            'prompt_version_id': system_prompt.prompt_id,
         }

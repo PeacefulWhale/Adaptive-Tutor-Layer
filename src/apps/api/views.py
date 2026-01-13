@@ -46,9 +46,8 @@ class TutorRespondView(APIView):
         return Response(
             {
                 'conversation_id': result['conversation_id'],
-                'raw_model_response': result['raw_model_response'],
                 'tutor_response': result['tutor_response'],
-                'prompt_version_id': result['prompt_version_id'],
+                'turn_index': result['turn_index'],
             },
             status=status.HTTP_200_OK,
         )
