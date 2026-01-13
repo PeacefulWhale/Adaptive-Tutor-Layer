@@ -13,9 +13,6 @@ class LLMService:
         system_prompt_text: str,
         history_turns: list,
         user_message: str,
-        model: str | None = None,
-        temperature: float | None = None,
-        max_tokens: int | None = None,
     ) -> dict:
         messages = [{'role': 'system', 'content': system_prompt_text}]
         for turn in history_turns:
@@ -24,13 +21,11 @@ class LLMService:
         messages.append({'role': 'user', 'content': user_message})
 
         payload = {
-            'model': model or settings.LLM_DEFAULT_MODEL,
+            'model': settings.LLM_DEFAULT_MODEL,
             'messages': messages,
+            'temperature': settings.LLM_DEFAULT_TEMPERATURE,
+            'max_tokens': settings.LLM_DEFAULT_MAX_TOKENS,
         }
-        if temperature is not None:
-            payload['temperature'] = temperature
-        if max_tokens is not None:
-            payload['max_tokens'] = max_tokens
 
         headers = {
             'Content-Type': 'application/json',

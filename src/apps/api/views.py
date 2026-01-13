@@ -17,13 +17,15 @@ from .serializers import TutorRespondRequestSerializer
 
 @method_decorator(csrf_exempt, name='dispatch')
 class TutorRespondView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def post(self, request):
         serializer = TutorRespondRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
         conversation_id = data.get('conversation_id') or None
-        model = data.get('model') or None
         handler = TutorResponseHandler()
 
         try:
@@ -31,9 +33,6 @@ class TutorRespondView(APIView):
                 user_id=data['user_id'],
                 conversation_id=conversation_id,
                 question_text=data['question_text'],
-                model=model,
-                temperature=data.get('temperature'),
-                max_tokens=data.get('max_tokens'),
             )
         except PromptNotFoundError as exc:
             return Response({'detail': str(exc)}, status=status.HTTP_404_NOT_FOUND)

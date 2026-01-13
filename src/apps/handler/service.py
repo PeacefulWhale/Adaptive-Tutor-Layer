@@ -22,9 +22,6 @@ class TutorResponseHandler:
         user_id: str,
         conversation_id: str | None,
         question_text: str,
-        model: str | None = None,
-        temperature: float | None = None,
-        max_tokens: int | None = None,
     ) -> dict:
         if not conversation_id:
             conversation_id = str(uuid.uuid4())
@@ -37,9 +34,6 @@ class TutorResponseHandler:
             system_prompt_text=system_prompt.text,
             history_turns=history,
             user_message=question_text,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
         )
 
         metadata = {

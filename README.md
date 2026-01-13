@@ -42,7 +42,9 @@ docker run -p 8000:8000 \
   -e LLM_API_URL="https://api.x.ai/v1/chat/completions" \
   -e LLM_API_KEY="your-key-here" \
   -e LLM_TIMEOUT_SECONDS="15" \
-  -e LLM_DEFAULT_MODEL="grok-2-latest" \
+  -e LLM_DEFAULT_MODEL="grok-4-1-fast-non-reasoning" \
+  -e LLM_DEFAULT_TEMPERATURE="0.7" \
+  -e LLM_DEFAULT_MAX_TOKENS="512" \
   adaptive-tutor-api
 ```
 
@@ -56,9 +58,6 @@ Note: The Docker image runs `python src/manage.py migrate --noinput` automatical
 {
   "user_id": "user-123",
   "conversation_id": "optional-uuid",
-  "question_text": "What is photosynthesis?",
-  "model": "optional",
-  "temperature": 0.7,
-  "max_tokens": 512
+  "question_text": "What is photosynthesis?"
 }
 ```

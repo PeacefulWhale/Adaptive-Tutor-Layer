@@ -128,4 +128,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LLM_API_URL = os.getenv('LLM_API_URL', 'https://api.x.ai/v1/chat/completions')
 LLM_API_KEY = os.getenv('LLM_API_KEY', '')
 LLM_TIMEOUT_SECONDS = int(os.getenv('LLM_TIMEOUT_SECONDS', '15'))
-LLM_DEFAULT_MODEL = os.getenv('LLM_DEFAULT_MODEL', 'grok-2-latest')
+LLM_DEFAULT_MODEL = os.getenv('LLM_DEFAULT_MODEL', 'grok-4-1-fast-non-reasoning')
+LLM_DEFAULT_TEMPERATURE = float(os.getenv('LLM_DEFAULT_TEMPERATURE', '0.7'))
+LLM_DEFAULT_MAX_TOKENS = int(os.getenv('LLM_DEFAULT_MAX_TOKENS', '512'))

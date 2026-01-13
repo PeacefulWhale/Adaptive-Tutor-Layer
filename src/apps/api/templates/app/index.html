@@ -99,21 +99,6 @@
         <label for="question-text">Question</label>
         <textarea id="question-text" name="question_text" required>What is photosynthesis?</textarea>
 
-        <div class="row">
-          <div>
-            <label for="model">Model (optional)</label>
-            <input id="model" name="model" placeholder="grok-2-latest" />
-          </div>
-          <div>
-            <label for="temperature">Temperature</label>
-            <input id="temperature" name="temperature" type="number" step="0.1" min="0" max="2" value="0.7" />
-          </div>
-          <div>
-            <label for="max-tokens">Max tokens</label>
-            <input id="max-tokens" name="max_tokens" type="number" min="1" value="256" />
-          </div>
-        </div>
-
         <button id="submit-button" type="submit">Ask tutor</button>
       </form>
 
@@ -143,15 +128,6 @@
         };
         if (form.conversation_id.value.trim()) {
           data.conversation_id = form.conversation_id.value.trim();
-        }
-        if (form.model.value.trim()) {
-          data.model = form.model.value.trim();
-        }
-        if (form.temperature.value) {
-          data.temperature = Number(form.temperature.value);
-        }
-        if (form.max_tokens.value) {
-          data.max_tokens = Number(form.max_tokens.value);
         }
 
         try {
