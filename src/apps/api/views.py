@@ -1,12 +1,7 @@
-from apps.handler.service import TutorResponseHandler
-from apps.ratings_service.service import RatingsService
-from common.errors import (
-    FeedbackRequiredError,
-    LLMUpstreamError,
-    PersistenceError,
-    PromptDataError,
-    PromptNotFoundError,
-)
+from pathlib import Path
+
+from django.conf import settings
+from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -122,3 +117,11 @@ class TurnFeedbackView(APIView):
 
 def app_view(request):
     return render(request, 'app/index.html')
+
+
+def ninja_panel_view(request):
+    panel_path = settings.BASE_DIR / 'apps' / 'api' / 'templates' / 'panel' / 'index.html'
+    if not panel_path.exists():
+        raise Http404("Ninja panel not found.")
+    content = panel_path.read_text(encoding='utf-8')
+    return HttpResponse(content, content_type='text/html')

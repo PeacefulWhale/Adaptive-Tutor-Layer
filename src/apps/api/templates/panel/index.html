@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ninja Panel · Adaptive Tutor Layer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+        background: radial-gradient(circle at 20% 20%, rgba(89, 129, 255, 0.08), transparent 40%),
+          radial-gradient(circle at 80% 0%, rgba(255, 114, 94, 0.08), transparent 35%),
+          #05070f;
+        color: #e9ecf5;
+        min-height: 100vh;
+      }
+      h1 {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      .shell {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px clamp(16px, 4vw, 32px) 64px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .cols-3 {
+        grid-template-columns: repeat(12, 1fr);
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      }
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        color: #7da7ff;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        letter-spacing: 0.2px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .pill {
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .traffic-bar {
+        display: flex;
+        height: 12px;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        margin-top: 10px;
+      }
+      .arm-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+        .arm-table th,
+        .arm-table td {
+            padding: 8px 6px;
+            text-align: left;
+            font-size: 13px;
+        }
+      .arm-table th {
+        color: #8fa6d1;
+        font-weight: 500;
+      }
+      .arm-table tr td {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .score {
+        font-size: 26px;
+        font-weight: 600;
+        color: #8be7c7;
+      }
+      .mono {
+        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+      }
+      .chip {
+        border-radius: 10px;
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.06);
+        font-size: 12px;
+        color: #c5cee0;
+      }
+      .timeline {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+      }
+      .timeline-item {
+        min-width: 220px;
+        background: linear-gradient(135deg, rgba(72, 94, 255, 0.18), rgba(46, 220, 168, 0.12));
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 10px;
+      }
+      .spark {
+        height: 36px;
+        width: 100%;
+        border-radius: 10px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+        position: relative;
+        overflow: hidden;
+      }
+      .spark::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, rgba(255, 153, 102, 0.6), rgba(68, 192, 255, 0.7));
+        transform: translateX(var(--offset, 0%));
+        opacity: 0.8;
+      }
+      .policy-chip {
+        display: inline-flex;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: linear-gradient(120deg, rgba(92, 119, 255, 0.18), rgba(0, 219, 174, 0.16));
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+      .btn {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.04);
+        color: #fff;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .switcher {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .muted {
+        color: #8fa6d1;
+        font-size: 13px;
+      }
+      .dual {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 12px;
+      }
+      .bubble {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 12px;
+        line-height: 1.5;
+      }
+      .alert {
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(255, 179, 71, 0.12);
+        border: 1px solid rgba(255, 179, 71, 0.3);
+        color: #ffd9a0;
+        font-size: 13px;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .status.ok {
+        background: rgba(0, 194, 142, 0.14);
+        color: #8be7c7;
+      }
+      .status.warn {
+        background: rgba(255, 179, 71, 0.12);
+        color: #ffd9a0;
+      }
+      .status.alert {
+        background: rgba(255, 99, 99, 0.14);
+        color: #ffb1b1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+      const snapshots = [
+        {
+          id: 'Student A · Misconception repair',
+          student: {
+            id: 'stud-14',
+            persona: 'Confident-but-wrong',
+            mastery: 0.42,
+            topic: 'Backpropagation',
+            difficulty: '2 / 5',
+          },
+          policy: {
+            current: 'Socratic Probe v4',
+            reason: ['Detected misconception: chain rule sign', 'Recent Q-score drift up', 'Exploit mode'],
+            qScore: 0.78,
+          },
+          bandit: {
+            context: ['Topic=Backprop', 'State=Misconception', 'Goal=Concept repair'],
+            traffic: [
+              { name: 'Socratic Probe v4', share: 0.52, color: '#6be7c7' },
+              { name: 'Scaffolded Direct v2', share: 0.28, color: '#7da7ff' },
+              { name: 'Baseline', share: 0.12, color: '#ffb677' },
+              { name: 'GA Candidate P-17', share: 0.08, color: '#cfa2ff' },
+            ],
+            arms: [
+              { name: 'Socratic Probe v4', mean: 0.78, ci: 0.07, samples: 18 },
+              { name: 'Scaffolded Direct v2', mean: 0.71, ci: 0.06, samples: 15 },
+              { name: 'Baseline', mean: 0.48, ci: 0.05, samples: 12 },
+              { name: 'GA Candidate P-17', mean: 0.66, ci: 0.12, samples: 6 },
+            ],
+          },
+          turn: {
+            question: 'I think backprop just flips the sign of the derivative when going backward, right?',
+            adaptive:
+              'Let’s check that: when we backprop through a layer, what happens to the chain rule term for the activation? Is the sign always flipped or do we multiply by the downstream gradient?',
+            baseline:
+              'Backpropagation uses the chain rule to propagate errors backward through the network so weights can be updated.',
+            breakdown: { correctness: 0.82, clarity: 0.77, pedagogy: 0.76, delta: '+0.23 vs baseline' },
+            flags: ['Check for understanding present', 'Did not reveal full solution'],
+          },
+          drift: {
+            status: 'warn',
+            signals: [
+              { name: 'Question drift', value: 0.62, threshold: 0.55 },
+              { name: 'Feedback drift', value: 0.34, threshold: 0.5 },
+              { name: 'Tutor behavior', value: 0.18, threshold: 0.45 },
+            ],
+            notes: ['More “why” questions emerging', 'Misconception flag up 2x'],
+          },
+          timeline: [
+            { t: 'T-12', label: 'Drift warning', detail: 'Question distribution shift' },
+            { t: 'T-16', label: 'GA spawned P-17', detail: 'Adds forced check-for-understanding' },
+            { t: 'T-20', label: 'Exploration ↑', detail: 'P-17 traffic to 12%' },
+            { t: 'T-24', label: 'Exploit', detail: 'Socratic v4 wins; P-17 close' },
+          ],
+        },
+        {
+          id: 'Student B · Test-prep switch',
+          student: {
+            id: 'stud-08',
+            persona: 'Test-prep switcher',
+            mastery: 0.63,
+            topic: 'Logistic regression',
+            difficulty: '3 / 5',
+          },
+          policy: {
+            current: 'Exam-mode Direct v1',
+            reason: ['Time-boxed answers', 'High certainty on basics', 'Policy shift after drift'],
+            qScore: 0.71,
+          },
+          bandit: {
+            context: ['Topic=LogReg', 'State=Exam mode', 'Goal=Speed'],
+            traffic: [
+              { name: 'Exam-mode Direct v1', share: 0.46, color: '#ffc76b' },
+              { name: 'Socratic Probe v3', share: 0.22, color: '#8be7c7' },
+              { name: 'Baseline', share: 0.14, color: '#ff9eb5' },
+              { name: 'GA Candidate P-22', share: 0.18, color: '#7da7ff' },
+            ],
+            arms: [
+              { name: 'Exam-mode Direct v1', mean: 0.71, ci: 0.05, samples: 22 },
+              { name: 'Socratic Probe v3', mean: 0.64, ci: 0.08, samples: 15 },
+              { name: 'Baseline', mean: 0.49, ci: 0.05, samples: 10 },
+              { name: 'GA Candidate P-22', mean: 0.69, ci: 0.11, samples: 9 },
+            ],
+          },
+          turn: {
+            question: 'Quickly: what is the gradient of the logistic loss w.r.t. the weights?',
+            adaptive:
+              'For a single sample, gradient = (sigmoid(x·w) - y) * x. Want a 2-line refresher on why the sign flips when y=0?',
+            baseline: 'The gradient of logistic loss involves the derivative of the sigmoid function.',
+            breakdown: { correctness: 0.78, clarity: 0.74, pedagogy: 0.62, delta: '+0.17 vs baseline' },
+            flags: ['Compact answer', 'Offers micro-check'],
+          },
+          drift: {
+            status: 'ok',
+            signals: [
+              { name: 'Question drift', value: 0.28, threshold: 0.55 },
+              { name: 'Feedback drift', value: 0.19, threshold: 0.5 },
+              { name: 'Tutor behavior', value: 0.25, threshold: 0.45 },
+            ],
+            notes: ['Stabilized after exam-mode switch'],
+          },
+          timeline: [
+            { t: 'T-10', label: 'Persona shift', detail: 'Time-boxed questions ↑' },
+            { t: 'T-12', label: 'Drift confirmed', detail: 'Behavior shift → Red' },
+            { t: 'T-14', label: 'GA spawned P-22', detail: 'Concise + 1 check' },
+            { t: 'T-18', label: 'Adopt P-22', detail: 'Exploit direct mode' },
+          ],
+        },
+      ];
+
+      const StatusDot = ({ status }) => {
+        const className = status === 'warn' ? 'status warn' : status === 'alert' ? 'status alert' : 'status ok';
+        const label = status === 'warn' ? 'Warning' : status === 'alert' ? 'Alert' : 'Stable';
+        return <span className={className}>● {label}</span>;
+      };
+
+      const TrafficBar = ({ traffic }) => (
+        <div className="traffic-bar">
+          {traffic.map((arm) => (
+            <div
+              key={arm.name}
+              style={{
+                width: `${arm.share * 100}%`,
+                background: arm.color,
+                opacity: 0.9,
+              }}
+              title={`${arm.name} ${Math.round(arm.share * 100)}%`}
+            />
+          ))}
+        </div>
+      );
+
+      const BanditCard = ({ snapshot }) => (
+        <div className="card" style={{ gridColumn: 'span 4' }}>
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <h3>Bandit State</h3>
+            <div className="row">
+              {snapshot.bandit.context.map((c) => (
+                <span key={c} className="chip">
+                  {c}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="muted">Traffic allocation (last 20 turns)</div>
+          <TrafficBar traffic={snapshot.bandit.traffic} />
+          <table className="arm-table">
+            <thead>
+              <tr>
+                <th>Policy</th>
+                <th>Mean Q</th>
+                <th>CI</th>
+                <th>n</th>
+              </tr>
+            </thead>
+            <tbody>
+              {snapshot.bandit.arms.map((arm) => (
+                <tr key={arm.name}>
+                  <td>{arm.name}</td>
+                  <td>{arm.mean.toFixed(2)}</td>
+                  <td>±{arm.ci.toFixed(2)}</td>
+                  <td className="mono">{arm.samples}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+
+      const ConversationCard = ({ snapshot }) => (
+        <div className="card" style={{ gridColumn: 'span 5' }}>
+          <h3>Live Conversation · Adaptive vs Baseline</h3>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 8 }}>
+            <div className="badge">Student: {snapshot.student.persona}</div>
+            <div className="badge">Topic: {snapshot.student.topic}</div>
+          </div>
+          <div className="bubble" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+            <div className="muted">Student question</div>
+            {snapshot.turn.question}
+          </div>
+          <div className="dual" style={{ marginTop: 12 }}>
+            <div className="bubble">
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <strong>Adaptive</strong>
+                <span className="badge">Policy: {snapshot.policy.current}</span>
+              </div>
+              <p style={{ marginTop: 8 }}>{snapshot.turn.adaptive}</p>
+              <div className="row" style={{ marginTop: 6, gap: 8 }}>
+                <span className="chip">Correctness {Math.round(snapshot.turn.breakdown.correctness * 100)}%</span>
+                <span className="chip">Clarity {Math.round(snapshot.turn.breakdown.clarity * 100)}%</span>
+                <span className="chip">Pedagogy {Math.round(snapshot.turn.breakdown.pedagogy * 100)}%</span>
+              </div>
+            </div>
+            <div className="bubble" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <strong>Baseline</strong>
+                <span className="badge">Static prompt</span>
+              </div>
+              <p style={{ marginTop: 8 }}>{snapshot.turn.baseline}</p>
+              <div className="row" style={{ marginTop: 6, gap: 8 }}>
+                <span className="chip">Correctness 55%</span>
+                <span className="chip">Clarity 52%</span>
+                <span className="chip">Pedagogy 38%</span>
+              </div>
+            </div>
+          </div>
+          <div className="row" style={{ marginTop: 12, justifyContent: 'space-between' }}>
+            <div className="row" style={{ gap: 10 }}>
+              <span className="badge">Delta {snapshot.turn.breakdown.delta}</span>
+              {snapshot.turn.flags.map((f) => (
+                <span className="badge" key={f}>
+                  {f}
+                </span>
+              ))}
+            </div>
+            <span className="score">Q {snapshot.policy.qScore.toFixed(2)}</span>
+          </div>
+        </div>
+      );
+
+      const DriftCard = ({ snapshot }) => (
+        <div className="card" style={{ gridColumn: 'span 3' }}>
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <h3>Drift Monitor</h3>
+            <StatusDot status={snapshot.drift.status} />
+          </div>
+          <div className="grid" style={{ gap: 8 }}>
+            {snapshot.drift.signals.map((sig, idx) => (
+              <div key={sig.name} className="pill">
+                <div className="row" style={{ justifyContent: 'space-between' }}>
+                  <div>
+                    <div className="muted">{sig.name}</div>
+                    <strong>{(sig.value * 100).toFixed(0)}%</strong>
+                  </div>
+                  <span className="badge">Thresh {Math.round(sig.threshold * 100)}%</span>
+                </div>
+                <div className="spark" style={{ '--offset': `${-10 + idx * 10}%` }} />
+              </div>
+            ))}
+          </div>
+          <div className="alert" style={{ marginTop: 12 }}>
+            {snapshot.drift.notes.join(' · ')}
+          </div>
+        </div>
+      );
+
+      const TimelineCard = ({ snapshot }) => (
+        <div className="card" style={{ gridColumn: 'span 12' }}>
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <h3>Evolution Timeline</h3>
+            <div className="muted">Click events to narrate demo moments</div>
+          </div>
+          <div className="timeline">
+            {snapshot.timeline.map((ev) => (
+              <div className="timeline-item" key={ev.t}>
+                <div className="row" style={{ justifyContent: 'space-between' }}>
+                  <strong>{ev.label}</strong>
+                  <span className="badge">{ev.t}</span>
+                </div>
+                <div className="muted" style={{ marginTop: 6 }}>
+                  {ev.detail}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      const Header = ({ snapshot }) => (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div className="muted">Student</div>
+              <div className="row" style={{ gap: 10, marginTop: 4 }}>
+                <span className="badge">ID: {snapshot.student.id}</span>
+                <span className="badge">{snapshot.student.persona}</span>
+                <span className="badge">Topic: {snapshot.student.topic}</span>
+                <span className="badge">Difficulty: {snapshot.student.difficulty}</span>
+              </div>
+            </div>
+            <div className="row" style={{ gap: 10 }}>
+              <div className="policy-chip">
+                <div className="muted">Current Policy</div>
+                <div style={{ fontWeight: 700 }}>{snapshot.policy.current}</div>
+              </div>
+              <div className="policy-chip" style={{ textAlign: 'right' }}>
+                <div className="muted">Mastery est.</div>
+                <div style={{ fontSize: 22, fontWeight: 700 }}>{Math.round(snapshot.student.mastery * 100)}%</div>
+              </div>
+            </div>
+          </div>
+          <div className="row" style={{ gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+            {snapshot.policy.reason.map((r) => (
+              <span className="badge" key={r}>
+                {r}
+              </span>
+            ))}
+          </div>
+        </div>
+      );
+
+      function App() {
+        const [index, setIndex] = React.useState(0);
+        const snapshot = snapshots[index];
+
+        const next = () => setIndex((i) => (i + 1) % snapshots.length);
+        const prev = () => setIndex((i) => (i - 1 + snapshots.length) % snapshots.length);
+
+        return (
+          <div className="shell">
+            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12 }}>
+              <div>
+                <div className="muted">Ninja Panel</div>
+                <h1 style={{ margin: '4px 0 0', letterSpacing: '-0.5px' }}>{snapshot.id}</h1>
+              </div>
+              <div className="switcher">
+                <button className="btn" onClick={prev}>
+                  ◀ Previous
+                </button>
+                <button className="btn" onClick={next}>
+                  Next ▶
+                </button>
+              </div>
+            </div>
+            <Header snapshot={snapshot} />
+            <div className="grid cols-3">
+              <BanditCard snapshot={snapshot} />
+              <ConversationCard snapshot={snapshot} />
+              <DriftCard snapshot={snapshot} />
+              <TimelineCard snapshot={snapshot} />
+            </div>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
