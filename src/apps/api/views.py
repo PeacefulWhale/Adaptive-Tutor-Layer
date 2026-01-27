@@ -12,6 +12,7 @@ from common.errors import (
     PersistenceError,
     PromptDataError,
     PromptNotFoundError,
+    FeedbackRequiredError,
 )
 from .serializers import TurnFeedbackRequestSerializer, TutorRespondRequestSerializer
 
@@ -35,6 +36,16 @@ class TutorRespondView(APIView):
                 conversation_id=conversation_id,
                 question_text=data['question_text'],
             )
+        except FeedbackRequiredError as exc:
+            return Response(
+                {
+                    'detail': str(exc),
+                    'code': 'feedback_required',
+                    'last_turn_id': exc.last_turn_id,
+                    'last_turn_index': exc.last_turn_index,
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
         except PromptNotFoundError as exc:
             return Response({'detail': str(exc)}, status=status.HTTP_404_NOT_FOUND)
         except PromptDataError as exc:
@@ -50,6 +61,7 @@ class TutorRespondView(APIView):
         return Response(
             {
                 'conversation_id': result['conversation_id'],
+                'turn_id': result['turn_id'],
                 'tutor_response': result['tutor_response'],
                 'turn_index': result['turn_index'],
             },
