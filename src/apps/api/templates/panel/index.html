@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Ninja Panel · Adaptive Tutor Layer</title>
+    <title>Adaptive Tutor Layer · Ninja Panel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -34,128 +34,18 @@
       .shell {
         max-width: 1400px;
         margin: 0 auto;
-        padding: 24px clamp(16px, 4vw, 32px) 64px;
+        padding: 24px clamp(16px, 4vw, 32px) 48px;
       }
-      .grid {
-        display: grid;
-        gap: 16px;
-      }
-      .cols-3 {
-        grid-template-columns: repeat(12, 1fr);
-      }
-      .card {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 16px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-      }
-      .card h3 {
-        margin: 0 0 10px;
-        font-size: 16px;
-        letter-spacing: 0.4px;
-        text-transform: uppercase;
-        color: #7da7ff;
-      }
-      .row {
+      .topbar {
         display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
         gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
       }
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        letter-spacing: 0.2px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-      }
-      .pill {
-        border-radius: 12px;
-        padding: 12px 14px;
-        background: rgba(255, 255, 255, 0.04);
-      }
-      .traffic-bar {
-        display: flex;
-        height: 12px;
-        border-radius: 999px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        margin-top: 10px;
-      }
-      .arm-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-      }
-        .arm-table th,
-        .arm-table td {
-            padding: 8px 6px;
-            text-align: left;
-            font-size: 13px;
-        }
-      .arm-table th {
+      .muted {
         color: #8fa6d1;
-        font-weight: 500;
-      }
-      .arm-table tr td {
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-      }
-      .score {
-        font-size: 26px;
-        font-weight: 600;
-        color: #8be7c7;
-      }
-      .mono {
-        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
-      }
-      .chip {
-        border-radius: 10px;
-        padding: 8px 10px;
-        background: rgba(255, 255, 255, 0.06);
-        font-size: 12px;
-        color: #c5cee0;
-      }
-      .timeline {
-        display: flex;
-        gap: 12px;
-        overflow-x: auto;
-        padding-bottom: 6px;
-      }
-      .timeline-item {
-        min-width: 220px;
-        background: linear-gradient(135deg, rgba(72, 94, 255, 0.18), rgba(46, 220, 168, 0.12));
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 10px;
-      }
-      .spark {
-        height: 36px;
-        width: 100%;
-        border-radius: 10px;
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
-        position: relative;
-        overflow: hidden;
-      }
-      .spark::after {
-        content: "";
-        position: absolute;
-        inset: 8px;
-        border-radius: 8px;
-        background: linear-gradient(90deg, rgba(255, 153, 102, 0.6), rgba(68, 192, 255, 0.7));
-        transform: translateX(var(--offset, 0%));
-        opacity: 0.8;
-      }
-      .policy-chip {
-        display: inline-flex;
-        padding: 8px 10px;
-        border-radius: 12px;
-        background: linear-gradient(120deg, rgba(92, 119, 255, 0.18), rgba(0, 219, 174, 0.16));
-        border: 1px solid rgba(255, 255, 255, 0.14);
+        font-size: 13px;
       }
       .btn {
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -170,56 +60,103 @@
       .btn:active {
         transform: translateY(1px);
       }
-      .switcher {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+      .canvas {
+        position: relative;
+        width: 100%;
+        min-height: 78vh;
+        border-radius: 20px;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(19, 30, 54, 0.9), rgba(9, 14, 28, 0.92));
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
       }
-      .muted {
-        color: #8fa6d1;
-        font-size: 13px;
+      .stage {
+        position: absolute;
+        inset: 20px;
+        border-radius: 16px;
       }
-      .dual {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 12px;
+      .nodes-layer {
+        position: absolute;
+        inset: 0;
       }
-      .bubble {
+      .node {
+        position: absolute;
+        min-width: 200px;
+        max-width: 260px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        padding: 12px;
-        line-height: 1.5;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(4px);
       }
-      .alert {
-        padding: 10px 12px;
-        border-radius: 10px;
-        background: rgba(255, 179, 71, 0.12);
-        border: 1px solid rgba(255, 179, 71, 0.3);
-        color: #ffd9a0;
+      .node h3 {
+        margin: 0 0 6px;
+        font-size: 14px;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+      }
+      .node .body {
         font-size: 13px;
+        color: #c7d4f2;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
-      .status {
+      .node::after {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: 14px;
+        pointer-events: none;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      }
+      .node:active { cursor: grabbing; }
+      .badge {
         display: inline-flex;
         align-items: center;
         gap: 6px;
         padding: 6px 10px;
-        border-radius: 10px;
+        border-radius: 999px;
         font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
+        letter-spacing: 0.2px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
-      .status.ok {
-        background: rgba(0, 194, 142, 0.14);
-        color: #8be7c7;
+      .legend {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        display: grid;
+        gap: 6px;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 12px;
       }
-      .status.warn {
-        background: rgba(255, 179, 71, 0.12);
-        color: #ffd9a0;
+      .mono {
+        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
       }
-      .status.alert {
-        background: rgba(255, 99, 99, 0.14);
-        color: #ffb1b1;
+      svg.paths {
+        position: absolute;
+        inset: 0;
+        overflow: visible;
+        pointer-events: none;
+      }
+      .edge {
+        stroke-dasharray: 5 10;
+        animation: dash 5s linear infinite;
+        opacity: 0.85;
+      }
+      @keyframes dash {
+        to {
+          stroke-dashoffset: -200;
+        }
+      }
+      .glow {
+        filter: drop-shadow(0 0 6px rgba(111, 213, 255, 0.35));
       }
     </style>
   </head>
@@ -241,294 +178,229 @@
             topic: 'Backpropagation',
             difficulty: '2 / 5',
           },
+
           policy: {
             current: 'Socratic Probe v4',
-            reason: ['Detected misconception: chain rule sign', 'Recent Q-score drift up', 'Exploit mode'],
+            reason: ['Misconception detected', 'Adaptive beats baseline', 'Exploit mode'],
             qScore: 0.78,
           },
+
           bandit: {
             context: ['Topic=Backprop', 'State=Misconception', 'Goal=Concept repair'],
-            traffic: [
-              { name: 'Socratic Probe v4', share: 0.52, color: '#6be7c7' },
-              { name: 'Scaffolded Direct v2', share: 0.28, color: '#7da7ff' },
-              { name: 'Baseline', share: 0.12, color: '#ffb677' },
-              { name: 'GA Candidate P-17', share: 0.08, color: '#cfa2ff' },
-            ],
-            arms: [
-              { name: 'Socratic Probe v4', mean: 0.78, ci: 0.07, samples: 18 },
-              { name: 'Scaffolded Direct v2', mean: 0.71, ci: 0.06, samples: 15 },
-              { name: 'Baseline', mean: 0.48, ci: 0.05, samples: 12 },
-              { name: 'GA Candidate P-17', mean: 0.66, ci: 0.12, samples: 6 },
-            ],
+            picked_from: ['Socratic Probe v4', 'Guided Steps v2', 'Direct Explain v1'],
+            selected: 'Socratic Probe v4',
           },
+
+          policies: {
+            candidates: [
+              { name: 'Socratic Probe v4', weight: 0.62, mean_q: 0.78 },
+              { name: 'Guided Steps v2', weight: 0.24, mean_q: 0.71 },
+              { name: 'Direct Explain v1', weight: 0.14, mean_q: 0.66 },
+            ],
+            note: 'Bandit explores, then shifts traffic to the best policy for this student state.',
+          },
+
+          static_policy: {
+            name: 'Static Tutor Prompt v0',
+            note: 'Fixed “helpful tutor” prompt used as the control baseline.',
+          },
+
           turn: {
             question: 'I think backprop just flips the sign of the derivative when going backward, right?',
             adaptive:
               'Let’s check that: when we backprop through a layer, what happens to the chain rule term for the activation? Is the sign always flipped or do we multiply by the downstream gradient?',
             baseline:
               'Backpropagation uses the chain rule to propagate errors backward through the network so weights can be updated.',
-            breakdown: { correctness: 0.82, clarity: 0.77, pedagogy: 0.76, delta: '+0.23 vs baseline' },
-            flags: ['Check for understanding present', 'Did not reveal full solution'],
+            breakdown: { delta: '+0.23 vs baseline' },
+            flags: ['Check-for-understanding present', 'Avoided giving full solution'],
+            prompts: {
+              adaptive: 'Socratic Probe v4',
+              baseline: 'Static Tutor Prompt v0',
+            },
           },
-          drift: {
-            status: 'warn',
-            signals: [
-              { name: 'Question drift', value: 0.62, threshold: 0.55 },
-              { name: 'Feedback drift', value: 0.34, threshold: 0.5 },
-              { name: 'Tutor behavior', value: 0.18, threshold: 0.45 },
-            ],
-            notes: ['More “why” questions emerging', 'Misconception flag up 2x'],
+
+          llm: {
+            model: 'grok-2 (via LLM Service)',
+            note: 'Same model. Different system prompt → different teaching behavior.',
           },
-          timeline: [
-            { t: 'T-12', label: 'Drift warning', detail: 'Question distribution shift' },
-            { t: 'T-16', label: 'GA spawned P-17', detail: 'Adds forced check-for-understanding' },
-            { t: 'T-20', label: 'Exploration ↑', detail: 'P-17 traffic to 12%' },
-            { t: 'T-24', label: 'Exploit', detail: 'Socratic v4 wins; P-17 close' },
-          ],
-        },
-        {
-          id: 'Student B · Test-prep switch',
-          student: {
-            id: 'stud-08',
-            persona: 'Test-prep switcher',
-            mastery: 0.63,
-            topic: 'Logistic regression',
-            difficulty: '3 / 5',
+
+          qscore: {
+            q: 0.78,
+            delta_vs_baseline: 0.23,
+            reward: 0.78,
+            components: { correctness: 0.82, clarity: 0.77, pedagogy: 0.76 },
           },
-          policy: {
-            current: 'Exam-mode Direct v1',
-            reason: ['Time-boxed answers', 'High certainty on basics', 'Policy shift after drift'],
-            qScore: 0.71,
-          },
-          bandit: {
-            context: ['Topic=LogReg', 'State=Exam mode', 'Goal=Speed'],
-            traffic: [
-              { name: 'Exam-mode Direct v1', share: 0.46, color: '#ffc76b' },
-              { name: 'Socratic Probe v3', share: 0.22, color: '#8be7c7' },
-              { name: 'Baseline', share: 0.14, color: '#ff9eb5' },
-              { name: 'GA Candidate P-22', share: 0.18, color: '#7da7ff' },
-            ],
-            arms: [
-              { name: 'Exam-mode Direct v1', mean: 0.71, ci: 0.05, samples: 22 },
-              { name: 'Socratic Probe v3', mean: 0.64, ci: 0.08, samples: 15 },
-              { name: 'Baseline', mean: 0.49, ci: 0.05, samples: 10 },
-              { name: 'GA Candidate P-22', mean: 0.69, ci: 0.11, samples: 9 },
-            ],
-          },
-          turn: {
-            question: 'Quickly: what is the gradient of the logistic loss w.r.t. the weights?',
-            adaptive:
-              'For a single sample, gradient = (sigmoid(x·w) - y) * x. Want a 2-line refresher on why the sign flips when y=0?',
-            baseline: 'The gradient of logistic loss involves the derivative of the sigmoid function.',
-            breakdown: { correctness: 0.78, clarity: 0.74, pedagogy: 0.62, delta: '+0.17 vs baseline' },
-            flags: ['Compact answer', 'Offers micro-check'],
-          },
-          drift: {
-            status: 'ok',
-            signals: [
-              { name: 'Question drift', value: 0.28, threshold: 0.55 },
-              { name: 'Feedback drift', value: 0.19, threshold: 0.5 },
-              { name: 'Tutor behavior', value: 0.25, threshold: 0.45 },
-            ],
-            notes: ['Stabilized after exam-mode switch'],
-          },
-          timeline: [
-            { t: 'T-10', label: 'Persona shift', detail: 'Time-boxed questions ↑' },
-            { t: 'T-12', label: 'Drift confirmed', detail: 'Behavior shift → Red' },
-            { t: 'T-14', label: 'GA spawned P-22', detail: 'Concise + 1 check' },
-            { t: 'T-18', label: 'Adopt P-22', detail: 'Exploit direct mode' },
-          ],
         },
       ];
 
-      const StatusDot = ({ status }) => {
-        const className = status === 'warn' ? 'status warn' : status === 'alert' ? 'status alert' : 'status ok';
-        const label = status === 'warn' ? 'Warning' : status === 'alert' ? 'Alert' : 'Stable';
-        return <span className={className}>● {label}</span>;
+      const layout = {
+        nodes: [
+          // Student at bottom-center
+          { id: 'student', label: 'Student Input', color: '#60A5FA', x: 52, y: 78 },
+
+          // Adaptive policy selection stack (left)
+          { id: 'bandit', label: 'Policy Selector (Bandit)', color: '#34D399', x: 17, y: 56 },
+          { id: 'policies', label: 'Available Policies', color: '#93C5FD', x: 13, y: 70 },
+
+          // Control prompt (mid)
+          { id: 'static_policy', label: 'Static Policy (Control)', color: '#FB923C', x: 33, y: 40 },
+
+          // Tutors (mid/right)
+          { id: 'adaptive', label: 'Adaptive Tutor', color: '#2DD4BF', x: 63, y: 56 },
+          { id: 'baseline', label: 'Baseline Tutor', color: '#FBBF24', x: 86, y: 34 },
+
+          // Evaluator (top-center)
+          { id: 'qscore', label: 'Q-score Evaluator', color: '#67E8F9', x: 66, y: 14 },
+
+          // Shared model (top-left-ish)
+          { id: 'llm', label: 'Language Model', color: '#F472B6', x: 16, y: 18 },
+        ],
+        edges: [
+          // Student feeds both flows
+          { from: 'student', to: 'bandit',        color: '#60A5FA', label: 'Student context' },
+          { from: 'student', to: 'static_policy', color: '#FB923C', label: 'Control path' },
+
+          // Bandit consults candidates
+          { from: 'policies', to: 'bandit',       color: '#93C5FD', label: 'Policy candidates' },
+
+          // LLM calls
+          { from: 'bandit', to: 'llm',       color: '#34D399', label: 'Selected policy' },
+          { from: 'static_policy', to: 'llm', color: '#FB923C', label: 'Fixed prompt' },
+
+          // LLM returns outputs
+          { from: 'llm', to: 'adaptive',          color: '#2DD4BF', label: 'Tutor response' },
+          { from: 'llm', to: 'baseline',          color: '#FBBF24', label: 'Tutor response' },
+
+          // Evaluation (both compared at Q-score)
+          { from: 'adaptive', to: 'qscore',       color: '#67E8F9', label: 'Score adaptive' },
+          // { from: 'baseline', to: 'qscore',       color: '#67E8F9', label: 'Score baseline' },
+
+          // Learning loop
+          { from: 'qscore', to: 'bandit',         color: '#67E8F9', label: 'Reward update' },
+        ],
       };
 
-      const TrafficBar = ({ traffic }) => (
-        <div className="traffic-bar">
-          {traffic.map((arm) => (
-            <div
-              key={arm.name}
-              style={{
-                width: `${arm.share * 100}%`,
-                background: arm.color,
-                opacity: 0.9,
-              }}
-              title={`${arm.name} ${Math.round(arm.share * 100)}%`}
-            />
-          ))}
-        </div>
+      function pickPort(fromRect, toRect) {
+        const fx = fromRect.x + fromRect.width / 2;
+        const fy = fromRect.y + fromRect.height / 2;
+        const tx = toRect.x + toRect.width / 2;
+        const ty = toRect.y + toRect.height / 2;
+
+        const dx = tx - fx;
+        const dy = ty - fy;
+
+        // Choose side based on dominant direction
+        const horizontal = Math.abs(dx) >= Math.abs(dy);
+
+        const from = horizontal
+          ? (dx >= 0
+              ? { x: fromRect.x + fromRect.width, y: fy }   // right
+              : { x: fromRect.x, y: fy })                   // left
+          : (dy >= 0
+              ? { x: fx, y: fromRect.y + fromRect.height }  // bottom
+              : { x: fx, y: fromRect.y });                  // top
+
+        const to = horizontal
+          ? (dx >= 0
+              ? { x: toRect.x, y: ty }                      // left
+              : { x: toRect.x + toRect.width, y: ty })      // right
+          : (dy >= 0
+              ? { x: tx, y: toRect.y }                      // top
+              : { x: tx, y: toRect.y + toRect.height });    // bottom
+
+        return { from, to, dx, dy };
+      }
+
+      function bezierPath(from, to) {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+
+        // control points: mostly horizontal if dx dominates
+        const c = Math.min(140, Math.max(70, Math.abs(dx) * 0.35));
+
+        const c1 = { x: from.x + Math.sign(dx || 1) * c, y: from.y };
+        const c2 = { x: to.x - Math.sign(dx || 1) * c, y: to.y };
+
+        return `M ${from.x} ${from.y} C ${c1.x} ${c1.y} ${c2.x} ${c2.y} ${to.x} ${to.y}`;
+      }
+
+      function clamp(v, lo, hi) {
+        return Math.max(lo, Math.min(hi, v));
+      }
+
+      const StatusDot = ({ status }) => {
+        const color = status === 'warn' ? '#ffd273' : status === 'alert' ? '#ff9b9b' : '#8be7c7';
+        const label = status === 'warn' ? 'Warning' : status === 'alert' ? 'Alert' : 'Stable';
+        return (
+          <span className="badge" style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.12)' }}>
+            <span style={{ color }}>●</span> {label}
+          </span>
+        );
+      };
+
+      const Node = ({ node, snapshot, register, selected, setSelected, onMouseDown }) => {
+        let body = '';
+        if (node.id === 'student') {
+          body = snapshot.turn.question;
+        } else if (node.id === 'bandit') {
+          body = `${snapshot.policy.current} • ${snapshot.bandit.context.join(', ')}`;
+        } else if (node.id === 'adaptive') {
+          body = snapshot.turn.adaptive;
+        } else if (node.id === 'baseline') {
+          body = snapshot.turn.baseline;
+        } else if (node.id === 'feedback') {
+          body = snapshot.turn.flags.join(' · ');
+        } else if (node.id === 'qscore') {
+          body = `Q=${snapshot.policy.qScore.toFixed(2)} | Δ ${snapshot.turn.breakdown.delta}`;
+        } else if (node.id === 'drift') {
+          body = snapshot.drift.notes.join(' · ');
+        } else if (node.id === 'evolution') {
+          body = snapshot.timeline.find((e) => e.label.includes('GA'))?.detail || 'New candidate pending';
+        }
+        return (
+          <div
+            ref={(el) => register(node.id, el)}
+            className="node"
+            onMouseDown={(e) => onMouseDown(e, node.id)}
+            onClick={() => setSelected(node.id)}
+            style={{
+              left: `${node.x}%`,
+              top: `${node.y}%`,
+              transform: 'translate(-50%, -50%)',
+              borderColor: selected === node.id ? `${node.color}` : `${node.color}55`,
+              boxShadow: selected === node.id
+                ? `0 12px 40px ${node.color}55`
+                : `0 10px 30px ${node.color}33`,
+              cursor: 'grab',
+              userSelect: 'none',
+            }}
+          >
+            <h3 style={{ color: node.color }}>{node.label}</h3>
+            <div className="body">{body}</div>
+          </div>
+        );
+      };
+
+      const Edge = ({ d, color }) => (
+        <path
+          d={d}
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          className="edge glow"
+        />
       );
 
-      const BanditCard = ({ snapshot }) => (
-        <div className="card" style={{ gridColumn: 'span 4' }}>
-          <div className="row" style={{ justifyContent: 'space-between' }}>
-            <h3>Bandit State</h3>
-            <div className="row">
-              {snapshot.bandit.context.map((c) => (
-                <span key={c} className="chip">
-                  {c}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="muted">Traffic allocation (last 20 turns)</div>
-          <TrafficBar traffic={snapshot.bandit.traffic} />
-          <table className="arm-table">
-            <thead>
-              <tr>
-                <th>Policy</th>
-                <th>Mean Q</th>
-                <th>CI</th>
-                <th>n</th>
-              </tr>
-            </thead>
-            <tbody>
-              {snapshot.bandit.arms.map((arm) => (
-                <tr key={arm.name}>
-                  <td>{arm.name}</td>
-                  <td>{arm.mean.toFixed(2)}</td>
-                  <td>±{arm.ci.toFixed(2)}</td>
-                  <td className="mono">{arm.samples}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      );
-
-      const ConversationCard = ({ snapshot }) => (
-        <div className="card" style={{ gridColumn: 'span 5' }}>
-          <h3>Live Conversation · Adaptive vs Baseline</h3>
-          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 8 }}>
-            <div className="badge">Student: {snapshot.student.persona}</div>
-            <div className="badge">Topic: {snapshot.student.topic}</div>
-          </div>
-          <div className="bubble" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-            <div className="muted">Student question</div>
-            {snapshot.turn.question}
-          </div>
-          <div className="dual" style={{ marginTop: 12 }}>
-            <div className="bubble">
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <strong>Adaptive</strong>
-                <span className="badge">Policy: {snapshot.policy.current}</span>
-              </div>
-              <p style={{ marginTop: 8 }}>{snapshot.turn.adaptive}</p>
-              <div className="row" style={{ marginTop: 6, gap: 8 }}>
-                <span className="chip">Correctness {Math.round(snapshot.turn.breakdown.correctness * 100)}%</span>
-                <span className="chip">Clarity {Math.round(snapshot.turn.breakdown.clarity * 100)}%</span>
-                <span className="chip">Pedagogy {Math.round(snapshot.turn.breakdown.pedagogy * 100)}%</span>
-              </div>
-            </div>
-            <div className="bubble" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <strong>Baseline</strong>
-                <span className="badge">Static prompt</span>
-              </div>
-              <p style={{ marginTop: 8 }}>{snapshot.turn.baseline}</p>
-              <div className="row" style={{ marginTop: 6, gap: 8 }}>
-                <span className="chip">Correctness 55%</span>
-                <span className="chip">Clarity 52%</span>
-                <span className="chip">Pedagogy 38%</span>
-              </div>
-            </div>
-          </div>
-          <div className="row" style={{ marginTop: 12, justifyContent: 'space-between' }}>
-            <div className="row" style={{ gap: 10 }}>
-              <span className="badge">Delta {snapshot.turn.breakdown.delta}</span>
-              {snapshot.turn.flags.map((f) => (
-                <span className="badge" key={f}>
-                  {f}
-                </span>
-              ))}
-            </div>
-            <span className="score">Q {snapshot.policy.qScore.toFixed(2)}</span>
-          </div>
-        </div>
-      );
-
-      const DriftCard = ({ snapshot }) => (
-        <div className="card" style={{ gridColumn: 'span 3' }}>
-          <div className="row" style={{ justifyContent: 'space-between' }}>
-            <h3>Drift Monitor</h3>
-            <StatusDot status={snapshot.drift.status} />
-          </div>
-          <div className="grid" style={{ gap: 8 }}>
-            {snapshot.drift.signals.map((sig, idx) => (
-              <div key={sig.name} className="pill">
-                <div className="row" style={{ justifyContent: 'space-between' }}>
-                  <div>
-                    <div className="muted">{sig.name}</div>
-                    <strong>{(sig.value * 100).toFixed(0)}%</strong>
-                  </div>
-                  <span className="badge">Thresh {Math.round(sig.threshold * 100)}%</span>
-                </div>
-                <div className="spark" style={{ '--offset': `${-10 + idx * 10}%` }} />
-              </div>
-            ))}
-          </div>
-          <div className="alert" style={{ marginTop: 12 }}>
-            {snapshot.drift.notes.join(' · ')}
-          </div>
-        </div>
-      );
-
-      const TimelineCard = ({ snapshot }) => (
-        <div className="card" style={{ gridColumn: 'span 12' }}>
-          <div className="row" style={{ justifyContent: 'space-between' }}>
-            <h3>Evolution Timeline</h3>
-            <div className="muted">Click events to narrate demo moments</div>
-          </div>
-          <div className="timeline">
-            {snapshot.timeline.map((ev) => (
-              <div className="timeline-item" key={ev.t}>
-                <div className="row" style={{ justifyContent: 'space-between' }}>
-                  <strong>{ev.label}</strong>
-                  <span className="badge">{ev.t}</span>
-                </div>
-                <div className="muted" style={{ marginTop: 6 }}>
-                  {ev.detail}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-      const Header = ({ snapshot }) => (
-        <div className="card" style={{ marginBottom: 16 }}>
-          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="muted">Student</div>
-              <div className="row" style={{ gap: 10, marginTop: 4 }}>
-                <span className="badge">ID: {snapshot.student.id}</span>
-                <span className="badge">{snapshot.student.persona}</span>
-                <span className="badge">Topic: {snapshot.student.topic}</span>
-                <span className="badge">Difficulty: {snapshot.student.difficulty}</span>
-              </div>
-            </div>
-            <div className="row" style={{ gap: 10 }}>
-              <div className="policy-chip">
-                <div className="muted">Current Policy</div>
-                <div style={{ fontWeight: 700 }}>{snapshot.policy.current}</div>
-              </div>
-              <div className="policy-chip" style={{ textAlign: 'right' }}>
-                <div className="muted">Mastery est.</div>
-                <div style={{ fontSize: 22, fontWeight: 700 }}>{Math.round(snapshot.student.mastery * 100)}%</div>
-              </div>
-            </div>
-          </div>
-          <div className="row" style={{ gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-            {snapshot.policy.reason.map((r) => (
-              <span className="badge" key={r}>
-                {r}
-              </span>
-            ))}
-          </div>
+      const Legend = ({ snapshot }) => (
+        <div className="legend">
+          <div><strong>{snapshot.id}</strong></div>
+          <div className="muted">Persona: {snapshot.student.persona}</div>
+          <div className="muted">Topic: {snapshot.student.topic}</div>
+          <div className="muted">Mastery: {Math.round(snapshot.student.mastery * 100)}%</div>
+          <div className="muted">Policy: {snapshot.policy.current}</div>
+          <div className="muted">Q-score: {snapshot.policy.qScore.toFixed(2)}</div>
         </div>
       );
 
@@ -539,28 +411,225 @@
         const next = () => setIndex((i) => (i + 1) % snapshots.length);
         const prev = () => setIndex((i) => (i - 1 + snapshots.length) % snapshots.length);
 
+        // ✅ nodes are now state (so we can drag)
+        const [nodesState, setNodesState] = React.useState(layout.nodes);
+
+        // keep selection
+        const [selected, setSelected] = React.useState(null);
+
+        const stageRef = React.useRef(null);
+        const nodeElsRef = React.useRef({}); // id -> HTMLElement
+        const [rects, setRects] = React.useState({}); // id -> {x,y,width,height}
+        const [paths, setPaths] = React.useState([]);
+
+        const register = React.useCallback((id, el) => {
+          if (el) nodeElsRef.current[id] = el;
+          else delete nodeElsRef.current[id];
+        }, []);
+
+        // --- DRAG STATE ---
+        const dragRef = React.useRef({
+          active: false,
+          id: null,
+          // offsets from pointer -> node center in %
+          offsetX: 0,
+          offsetY: 0,
+          pointerId: null,
+        });
+
+        const onMouseDown = React.useCallback((e, id) => {
+          // only left click
+          if (e.button !== 0) return;
+          e.preventDefault();
+          e.stopPropagation();
+
+          setSelected(id);
+
+          const stageEl = stageRef.current;
+          if (!stageEl) return;
+
+          const stageRect = stageEl.getBoundingClientRect();
+
+          // current node pos in %
+          const n = nodesState.find((x) => x.id === id);
+          if (!n) return;
+
+          const px = e.clientX - stageRect.left;
+          const py = e.clientY - stageRect.top;
+
+          const mouseXpct = (px / stageRect.width) * 100;
+          const mouseYpct = (py / stageRect.height) * 100;
+
+          dragRef.current.active = true;
+          dragRef.current.id = id;
+          dragRef.current.offsetX = n.x - mouseXpct;
+          dragRef.current.offsetY = n.y - mouseYpct;
+
+          window.addEventListener("mousemove", onMouseMove);
+          window.addEventListener("mouseup", onMouseUp);
+        }, [nodesState]);
+
+        const onMouseMove = React.useCallback((e) => {
+          if (!dragRef.current.active) return;
+
+          const stageEl = stageRef.current;
+          if (!stageEl) return;
+
+          const stageRect = stageEl.getBoundingClientRect();
+
+          const px = e.clientX - stageRect.left;
+          const py = e.clientY - stageRect.top;
+
+          let x = (px / stageRect.width) * 100 + dragRef.current.offsetX;
+          let y = (py / stageRect.height) * 100 + dragRef.current.offsetY;
+
+          // keep inside stage; because we center nodes, keep some margin
+          x = clamp(x, 6, 94);
+          y = clamp(y, 8, 92);
+
+          const id = dragRef.current.id;
+          setNodesState((prev) =>
+            prev.map((n) => (n.id === id ? { ...n, x, y } : n))
+          );
+        }, []);
+
+        const onMouseUp = React.useCallback(() => {
+          dragRef.current.active = false;
+          dragRef.current.id = null;
+          window.removeEventListener("mousemove", onMouseMove);
+          window.removeEventListener("mouseup", onMouseUp);
+        }, [onMouseMove]);
+
+        // click empty canvas to clear selection
+        const onStageClick = () => setSelected(null);
+
+        // --- MEASURE DOM RECTS (stage-relative) ---
+        const measure = React.useCallback(() => {
+          const stageEl = stageRef.current;
+          if (!stageEl) return;
+
+          const stageRect = stageEl.getBoundingClientRect();
+          const nextRects = {};
+
+          for (const n of nodesState) {
+            const el = nodeElsRef.current[n.id];
+            if (!el) continue;
+            const r = el.getBoundingClientRect();
+            nextRects[n.id] = {
+              x: r.left - stageRect.left,
+              y: r.top - stageRect.top,
+              width: r.width,
+              height: r.height,
+            };
+          }
+          setRects(nextRects);
+        }, [nodesState]);
+
+        // re-measure on mount / snapshot changes / node moves
+        React.useLayoutEffect(() => {
+          measure();
+          const raf = requestAnimationFrame(measure);
+          return () => cancelAnimationFrame(raf);
+        }, [index, nodesState, measure]);
+
+        // measure on resize / font load
+        React.useEffect(() => {
+          const stageEl = stageRef.current;
+          if (!stageEl) return;
+
+          let rafId = null;
+          const schedule = () => {
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(measure);
+          };
+
+          window.addEventListener("resize", schedule);
+
+          const ro = new ResizeObserver(schedule);
+          ro.observe(stageEl);
+          Object.values(nodeElsRef.current).forEach((el) => el && ro.observe(el));
+
+          if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(schedule).catch(() => {});
+          }
+
+          return () => {
+            window.removeEventListener("resize", schedule);
+            ro.disconnect();
+            if (rafId) cancelAnimationFrame(rafId);
+          };
+        }, [measure]);
+
+        // --- COMPUTE PATHS ---
+        const computePaths = React.useCallback(() => {
+          const nextPaths = [];
+
+          for (const e of layout.edges) {
+            const a = rects[e.from];
+            const b = rects[e.to];
+            if (!a || !b) continue;
+
+            const { from, to } = pickPort(a, b);
+            const d = bezierPath(from, to);
+
+            nextPaths.push({
+              key: `${e.from}-${e.to}`,
+              d,
+              color: e.color,
+              label: e.label,
+            });
+          }
+          setPaths(nextPaths);
+        }, [rects]);
+
+        React.useEffect(() => {
+          computePaths();
+        }, [computePaths]);
+
         return (
           <div className="shell">
-            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12 }}>
+            <div className="topbar">
               <div>
-                <div className="muted">Ninja Panel</div>
-                <h1 style={{ margin: '4px 0 0', letterSpacing: '-0.5px' }}>{snapshot.id}</h1>
+                <div className="muted">Adaptive Tutor Layer · Ninja Panel</div>
+                <h1>{snapshot.id}</h1>
               </div>
-              <div className="switcher">
-                <button className="btn" onClick={prev}>
-                  ◀ Previous
-                </button>
-                <button className="btn" onClick={next}>
-                  Next ▶
-                </button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button className="btn" onClick={prev}>◀ Previous</button>
+                <button className="btn" onClick={next}>Next ▶</button>
               </div>
             </div>
-            <Header snapshot={snapshot} />
-            <div className="grid cols-3">
-              <BanditCard snapshot={snapshot} />
-              <ConversationCard snapshot={snapshot} />
-              <DriftCard snapshot={snapshot} />
-              <TimelineCard snapshot={snapshot} />
+
+            <div className="canvas">
+              <Legend snapshot={snapshot} />
+
+              <div className="stage" ref={stageRef} onMouseDown={onStageClick}>
+                <svg className="paths" width="100%" height="100%">
+                  {paths.map((p) => (
+                    <Edge key={p.key} d={p.d} color={p.color} />
+                  ))}
+                </svg>
+
+                <div className="nodes-layer">
+                  {nodesState.map((node) => (
+                    <Node
+                      key={node.id}
+                      node={node}
+                      snapshot={snapshot}
+                      register={register}
+                      selected={selected}
+                      setSelected={setSelected}
+                      onMouseDown={onMouseDown}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ position: 'absolute', bottom: 12, left: 16, right: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {snapshot.policy.reason.map((r) => (
+                  <span className="badge" key={r}>{r}</span>
+                ))}
+                {snapshot.drift?.status && <StatusDot status={snapshot.drift.status} />}
+              </div>
             </div>
           </div>
         );
