@@ -1,12 +1,12 @@
 import uuid
 
+from apps.history_service.models import Turn
 from apps.history_service.service import HistoryService
 from apps.llm_service.service import LLMService
 from apps.prompt_service.service import PromptService
-from common.types import PromptContext
-from apps.history_service.models import Turn
 from apps.ratings_service.models import TurnFeedback
 from common.errors import FeedbackRequiredError
+from common.types import PromptContext
 
 
 class TutorResponseHandler:

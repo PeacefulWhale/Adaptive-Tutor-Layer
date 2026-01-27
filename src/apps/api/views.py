@@ -1,3 +1,12 @@
+from apps.handler.service import TutorResponseHandler
+from apps.ratings_service.service import RatingsService
+from common.errors import (
+    FeedbackRequiredError,
+    LLMUpstreamError,
+    PersistenceError,
+    PromptDataError,
+    PromptNotFoundError,
+)
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -5,15 +14,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.handler.service import TutorResponseHandler
-from apps.ratings_service.service import RatingsService
-from common.errors import (
-    LLMUpstreamError,
-    PersistenceError,
-    PromptDataError,
-    PromptNotFoundError,
-    FeedbackRequiredError,
-)
 from .serializers import TurnFeedbackRequestSerializer, TutorRespondRequestSerializer
 
 
