@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from apps.api.views import app_view
+from apps.api.views import app_view, ninja_panel_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('app/', app_view, name='app'),
+    path('panel/', ninja_panel_view, name='ninja-panel'),
     path('api/', include('apps.api.urls')),
 ]
