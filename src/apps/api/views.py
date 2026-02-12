@@ -156,6 +156,42 @@ class ConversationHistoryView(APIView):
         return Response({'turns': result}, status=status.HTTP_200_OK)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class ConversationListView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request):
+        user_id = request.query_params.get('user_id')
+        if not user_id:
+            return Response({'detail': 'user_id query param required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        from apps.history_service.models import Conversation
+
+        conversations = (
+            Conversation.objects.filter(user_id=user_id)
+            .order_by('-updated_at')
+        )
+
+        result = []
+        for conv in conversations:
+            first_turn = conv.turns.order_by('turn_index').first()
+            preview = ''
+            if first_turn:
+                preview = first_turn.user_text[:80]
+                if len(first_turn.user_text) > 80:
+                    preview += '…'
+            result.append({
+                'conversation_id': str(conv.id),
+                'preview': preview,
+                'created_at': conv.created_at.isoformat(),
+                'updated_at': conv.updated_at.isoformat(),
+                'turn_count': conv.turns.count(),
+            })
+
+        return Response({'conversations': result}, status=status.HTTP_200_OK)
+
+
 @login_required
 def app_view(request):
     return render(request, 'app/index.html')
