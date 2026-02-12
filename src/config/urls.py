@@ -24,4 +24,5 @@ urlpatterns = [
     path('app/', app_view, name='app'),
     path('panel/', ninja_panel_view, name='ninja-panel'),
     path('api/', include('apps.api.urls')),
+    path('accounts/', include('apps.accounts.urls')),
 ]

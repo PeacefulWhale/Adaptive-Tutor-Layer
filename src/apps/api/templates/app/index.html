@@ -95,7 +95,13 @@
   </head>
   <body>
     <div class="wrap">
-      <h1>Adaptive Tutor</h1>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h1>Adaptive Tutor</h1>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" style="margin:0;background:#fff;color:#1c1c1c;border:1px solid #b3ada5;">Log out</button>
+        </form>
+      </div>
 
       <form id="tutor-form">
         <div class="row">

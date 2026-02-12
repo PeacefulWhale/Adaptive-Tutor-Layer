@@ -17,6 +17,7 @@ from common.errors import (
     PromptDataError,
     PromptNotFoundError,
 )
+from django.contrib.auth.decorators import login_required
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -122,6 +123,7 @@ class TurnFeedbackView(APIView):
         )
 
 
+@login_required
 def app_view(request):
     return render(request, 'app/index.html')
 
