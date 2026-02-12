@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.api.views import TutorRespondView, TurnFeedbackView
+from apps.api.views import TutorRespondView, TurnFeedbackView, ConversationHistoryView
 
 urlpatterns = [
     path('tutor/respond', TutorRespondView.as_view(), name='tutor-respond'),
@@ -8,5 +8,10 @@ urlpatterns = [
         'turns/<uuid:turn_id>/feedback',
         TurnFeedbackView.as_view(),
         name='turn-feedback',
+    ),
+    path(
+        'conversations/<uuid:conversation_id>/history',
+        ConversationHistoryView.as_view(),
+        name='conversation-history',
     ),
 ]

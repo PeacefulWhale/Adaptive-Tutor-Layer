@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from .serializers import TurnFeedbackRequestSerializer, TutorRespondRequestSerializer
 from apps.handler.service import TutorResponseHandler
+from apps.history_service.service import HistoryService
 from apps.ratings_service.service import RatingsService
 from common.errors import (
     FeedbackRequiredError,
@@ -121,6 +122,38 @@ class TurnFeedbackView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ConversationHistoryView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, conversation_id):
+        user_id = request.query_params.get('user_id')
+        if not user_id:
+            return Response({'detail': 'user_id query param required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        from apps.history_service.models import Turn as TurnModel
+        from apps.ratings_service.models import TurnFeedback
+
+        turn_records = TurnModel.objects.filter(
+            conversation_id=conversation_id,
+            conversation__user_id=user_id,
+        ).order_by('turn_index')
+
+        result = []
+        for turn in turn_records:
+            has_feedback = TurnFeedback.objects.filter(turn=turn, user_id=user_id).exists()
+            result.append({
+                'turn_id': str(turn.id),
+                'turn_index': turn.turn_index,
+                'user_text': turn.user_text,
+                'assistant_text': turn.assistant_text,
+                'has_feedback': has_feedback,
+            })
+
+        return Response({'turns': result}, status=status.HTTP_200_OK)
 
 
 @login_required
