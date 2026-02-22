@@ -5,6 +5,7 @@ from apps.history_service.service import HistoryService
 from apps.llm_service.service import LLMService
 from apps.prompt_service.service import PromptService
 from apps.ratings_service.models import TurnFeedback
+from apps.prompt_service.models import PromptDecision
 from common.errors import FeedbackRequiredError
 from common.types import PromptContext
 
@@ -63,6 +64,13 @@ class TutorResponseHandler:
             metadata=metadata,
             prompt_id=system_prompt.prompt_id,
         )
+
+        PromptDecision.objects.filter(
+            learner_id=user_id,
+            conversation_id=conversation_id,
+            turn_number=turn.turn_index,
+            turn__isnull=True,
+        ).update(turn=turn)
 
         return {
             'conversation_id': conversation_id,

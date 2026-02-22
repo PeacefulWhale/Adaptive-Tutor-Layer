@@ -3,6 +3,7 @@ from django.db import transaction
 from apps.history_service.models import Turn
 from apps.ratings_service.models import Evaluator, TurnEvaluation, TurnFeedback
 from common.errors import PersistenceError
+from apps.prompt_service.service import PromptService
 
 
 class QScoreService:
@@ -110,4 +111,8 @@ class RatingsService:
         )
 
         evaluation = self.qscore_service.evaluate_turn(turn)
+
+        # Update bandit immediately for this turn if evaluation exists
+        if evaluation is not None:
+            PromptService().apply_reward_for_turn(turn)
         return feedback, evaluation

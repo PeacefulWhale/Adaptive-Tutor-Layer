@@ -19,3 +19,63 @@ class Prompt(models.Model):
 
     def __str__(self):
         return f"Prompt(active={self.is_active})"
+
+
+class PromptDecision(models.Model):
+    learner_id = models.CharField(max_length=128, db_index=True)
+    conversation_id = models.UUIDField(db_index=True)
+    turn = models.ForeignKey(
+        'history_service.Turn',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='prompt_decisions',
+    )
+    prompt = models.ForeignKey(
+        Prompt,
+        on_delete=models.CASCADE,
+        related_name='prompt_decisions',
+    )
+    turn_number = models.IntegerField()
+    sampled_theta = models.FloatField()
+    model_version = models.CharField(max_length=32)
+    chosen_at = models.DateTimeField(auto_now_add=True)
+    reward = models.FloatField(null=True, blank=True)
+    reward_computed_at = models.DateTimeField(null=True, blank=True)
+    reward_version = models.CharField(max_length=32, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-chosen_at', '-id']
+
+    def __str__(self):
+        return f"PromptDecision(prompt={self.prompt_id}, turn={self.turn_id})"
+
+
+class BanditUserArmState(models.Model):
+    learner_id = models.CharField(max_length=128, db_index=True)
+    prompt = models.ForeignKey(
+        Prompt,
+        on_delete=models.CASCADE,
+        related_name='user_bandit_states',
+    )
+    mu0 = models.FloatField(default=0.5)
+    lambda0 = models.FloatField(default=4.0)
+    eta = models.FloatField(default=0.0)
+    nu = models.FloatField(default=0.0)
+    sigma_r = models.FloatField(default=0.2)
+    alpha = models.FloatField(default=1.0)
+    gamma = models.FloatField(default=0.998)
+    effective_n = models.FloatField(default=0.0)
+    model_version = models.CharField(max_length=32)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('learner_id', 'prompt'),
+                name='unique_learner_prompt_bandit_state',
+            ),
+        ]
+
+    def __str__(self):
+        return f"BanditUserArmState(learner={self.learner_id}, prompt={self.prompt_id})"
