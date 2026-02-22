@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -7,7 +8,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import TurnFeedbackRequestSerializer, TutorRespondRequestSerializer
 from apps.handler.service import TutorResponseHandler
 from apps.ratings_service.service import RatingsService
 from common.errors import (
@@ -17,6 +17,8 @@ from common.errors import (
     PromptDataError,
     PromptNotFoundError,
 )
+
+from .serializers import TurnFeedbackRequestSerializer, TutorRespondRequestSerializer
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -122,6 +124,75 @@ class TurnFeedbackView(APIView):
         )
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class ConversationHistoryView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, conversation_id):
+        user_id = request.query_params.get('user_id')
+        if not user_id:
+            return Response({'detail': 'user_id query param required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        from apps.history_service.models import Turn as TurnModel
+        from apps.ratings_service.models import TurnFeedback
+
+        turn_records = TurnModel.objects.filter(
+            conversation_id=conversation_id,
+            conversation__user_id=user_id,
+        ).order_by('turn_index')
+
+        result = []
+        for turn in turn_records:
+            has_feedback = TurnFeedback.objects.filter(turn=turn, user_id=user_id).exists()
+            result.append({
+                'turn_id': str(turn.id),
+                'turn_index': turn.turn_index,
+                'user_text': turn.user_text,
+                'assistant_text': turn.assistant_text,
+                'has_feedback': has_feedback,
+            })
+
+        return Response({'turns': result}, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ConversationListView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request):
+        user_id = request.query_params.get('user_id')
+        if not user_id:
+            return Response({'detail': 'user_id query param required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        from apps.history_service.models import Conversation
+
+        conversations = (
+            Conversation.objects.filter(user_id=user_id)
+            .order_by('-updated_at')
+        )
+
+        result = []
+        for conv in conversations:
+            first_turn = conv.turns.order_by('turn_index').first()
+            preview = ''
+            if first_turn:
+                preview = first_turn.user_text[:80]
+                if len(first_turn.user_text) > 80:
+                    preview += '…'
+            result.append({
+                'conversation_id': str(conv.id),
+                'preview': preview,
+                'created_at': conv.created_at.isoformat(),
+                'updated_at': conv.updated_at.isoformat(),
+                'turn_count': conv.turns.count(),
+            })
+
+        return Response({'conversations': result}, status=status.HTTP_200_OK)
+
+
+@login_required
 def app_view(request):
     return render(request, 'app/index.html')
 

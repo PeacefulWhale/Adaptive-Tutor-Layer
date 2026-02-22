@@ -5,186 +5,461 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Adaptive Tutor</title>
     <style>
-      :root {
-        color-scheme: light;
-      }
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
-        margin: 0;
-        font-family: "Courier New", Courier, monospace;
-        background: #f7f4ef;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #f0ede8;
         color: #1c1c1c;
-      }
-      .wrap {
-        max-width: 860px;
-        margin: 32px auto;
-        padding: 0 20px 40px;
-      }
-      h1 {
-        font-size: 28px;
-        margin-bottom: 6px;
-      }
-      p {
-        margin-top: 0;
-      }
-      label {
-        display: block;
-        font-size: 13px;
-        margin: 14px 0 6px;
-      }
-      input,
-      textarea {
-        width: 100%;
-        font-family: inherit;
-        font-size: 14px;
-        padding: 10px;
-        border: 1px solid #c7c2bb;
-        border-radius: 6px;
-        background: #fffefb;
-        box-sizing: border-box;
-      }
-      textarea {
-        min-height: 120px;
-        resize: vertical;
-      }
-      .row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 12px;
-      }
-      button {
-        margin-top: 16px;
-        padding: 10px 16px;
-        font-size: 14px;
-        border: 1px solid #1c1c1c;
-        border-radius: 999px;
-        background: #1c1c1c;
-        color: #fffefb;
-        cursor: pointer;
-      }
-      button[disabled] {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-      .panel {
-        margin-top: 20px;
-        padding: 14px;
-        border: 1px dashed #b3ada5;
-        border-radius: 8px;
-        background: #fff;
-        white-space: pre-wrap;
-      }
-      .meta {
-        font-size: 12px;
-        color: #6b665e;
-      }
-      .tabs {
+        height: 100vh;
         display: flex;
-        gap: 8px;
-        margin-top: 20px;
+        flex-direction: column;
       }
-      .tab-btn {
-        padding: 8px 12px;
-        border-radius: 999px;
-        border: 1px solid #b3ada5;
+
+      /* ── header ── */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 20px;
         background: #fff;
-        cursor: pointer;
-        color:#1c1c1c;
+        border-bottom: 1px solid #ddd;
+        flex-shrink: 0;
       }
-      .hidden { display: none; }
+      .header h1 { font-size: 18px; font-weight: 600; }
+      .header-actions { display: flex; gap: 8px; align-items: center; }
+      .header-actions button, .header-actions .btn {
+        padding: 6px 14px; font-size: 13px; border-radius: 6px;
+        border: 1px solid #c7c2bb; background: #fff; color: #1c1c1c;
+        cursor: pointer; text-decoration: none; font-family: inherit;
+      }
+      .header-actions button:hover, .header-actions .btn:hover { background: #f5f3ef; }
+
+      /* ── sidebar / settings ── */
+      .settings-bar {
+        display: flex; gap: 12px; align-items: center;
+        padding: 8px 20px; background: #faf9f6;
+        border-bottom: 1px solid #e8e5df; flex-shrink: 0; font-size: 13px;
+      }
+      .settings-bar label { font-weight: 500; }
+      .settings-bar input {
+        padding: 5px 8px; border: 1px solid #d4d0ca; border-radius: 5px;
+        font-size: 13px; font-family: inherit; width: 140px;
+      }
+      .new-chat-btn {
+        margin-left: auto; padding: 5px 12px; font-size: 13px;
+        border-radius: 5px; border: 1px solid #1c1c1c;
+        background: #1c1c1c; color: #fff; cursor: pointer;
+      }
+
+      /* ── main layout ── */
+      .main-content {
+        flex: 1; display: flex; overflow: hidden;
+      }
+
+      /* ── sidebar ── */
+      .sidebar {
+        width: 280px; background: #fff; border-right: 1px solid #e0ddd7;
+        display: flex; flex-direction: column; flex-shrink: 0;
+        transition: margin-left .25s ease;
+      }
+      .sidebar.collapsed { margin-left: -280px; }
+      .sidebar-header {
+        padding: 12px 16px; border-bottom: 1px solid #e8e5df;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .sidebar-header h3 { font-size: 14px; font-weight: 600; margin: 0; }
+      .sidebar-toggle {
+        width: 28px; height: 28px; border: 1px solid #d4d0ca; border-radius: 6px;
+        background: #fff; cursor: pointer; display: flex; align-items: center;
+        justify-content: center; font-size: 14px; color: #555;
+      }
+      .sidebar-toggle:hover { background: #f5f3ef; }
+      .sidebar-list {
+        flex: 1; overflow-y: auto; padding: 8px 0;
+      }
+      .sidebar-item {
+        display: block; width: 100%; text-align: left; background: none;
+        border: none; padding: 10px 16px; cursor: pointer;
+        font-family: inherit; font-size: 13px; color: #333;
+        border-left: 3px solid transparent; transition: all .12s ease;
+      }
+      .sidebar-item:hover { background: #f5f3ef; }
+      .sidebar-item.active { background: #edeae4; border-left-color: #1c1c1c; font-weight: 500; }
+      .sidebar-item .si-preview {
+        display: block; white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis; line-height: 1.4;
+      }
+      .sidebar-item .si-meta {
+        display: flex; gap: 8px; font-size: 11px; color: #999; margin-top: 3px;
+      }
+      .sidebar-empty {
+        padding: 20px 16px; text-align: center; color: #aaa; font-size: 13px;
+      }
+      .sidebar-toggle-float {
+        position: absolute; top: 10px; left: 10px; z-index: 10;
+        width: 32px; height: 32px; border: 1px solid #d4d0ca; border-radius: 6px;
+        background: #fff; cursor: pointer; display: none; align-items: center;
+        justify-content: center; font-size: 16px; color: #555;
+        box-shadow: 0 1px 4px rgba(0,0,0,.1);
+      }
+      .sidebar-toggle-float:hover { background: #f5f3ef; }
+      .sidebar.collapsed ~ .chat-column .sidebar-toggle-float { display: flex; }
+
+      /* ── chat column ── */
+      .chat-column {
+        flex: 1; display: flex; flex-direction: column; position: relative;
+        min-width: 0;
+      }
+
+      /* ── chat area ── */
+      .chat-container {
+        flex: 1; overflow-y: auto; padding: 24px 20px;
+        display: flex; flex-direction: column;
+      }
+      .chat-messages {
+        max-width: 780px; width: 100%; margin: 0 auto;
+        display: flex; flex-direction: column; gap: 16px;
+      }
+
+      /* ── message bubbles ── */
+      .msg { display: flex; gap: 10px; max-width: 85%; animation: fadeIn .2s ease; }
+      .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+      .msg.assistant { align-self: flex-start; }
+
+      .msg-avatar {
+        width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; font-weight: 600;
+      }
+      .msg.user .msg-avatar { background: #1c1c1c; color: #fff; }
+      .msg.assistant .msg-avatar { background: #e8e5df; color: #555; }
+
+      .msg-body {
+        padding: 10px 14px; border-radius: 16px; line-height: 1.55;
+        font-size: 14px; white-space: pre-wrap; word-break: break-word;
+      }
+      .msg.user .msg-body {
+        background: #1c1c1c; color: #fff; border-bottom-right-radius: 4px;
+      }
+      .msg.assistant .msg-body {
+        background: #fff; border: 1px solid #e0ddd7; border-bottom-left-radius: 4px;
+      }
+
+      /* feedback checkbox beneath assistant messages */
+      .msg-footer { display: flex; gap: 6px; margin-top: 6px; }
+      .fb-check {
+        display: inline-flex; align-items: center; gap: 5px;
+        cursor: pointer; font-size: 12px; color: #888;
+        background: none; border: none; padding: 0; font-family: inherit;
+      }
+      .fb-check:hover { color: #555; }
+      .fb-check .cb-box {
+        width: 15px; height: 15px; border-radius: 3px;
+        border: 1.5px solid #bbb; display: flex;
+        align-items: center; justify-content: center;
+        transition: all .15s ease; flex-shrink: 0;
+      }
+      .fb-check:hover .cb-box { border-color: #888; }
+      .fb-check.done { color: #1a7431; cursor: default; }
+      .fb-check.done .cb-box {
+        background: #1a7431; border-color: #1a7431;
+      }
+      .fb-check.done .cb-box svg { display: block; }
+      .fb-check .cb-box svg { display: none; fill: #fff; width: 11px; height: 11px; }
+      .fb-check.highlight .cb-box { border-color: #d4a017; box-shadow: 0 0 0 2px rgba(212,160,23,.25); }
+
+      /* typing indicator */
+      .typing-indicator { display: flex; gap: 4px; padding: 8px 14px; }
+      .typing-indicator span {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #aaa; animation: blink 1.4s infinite both;
+      }
+      .typing-indicator span:nth-child(2) { animation-delay: .2s; }
+      .typing-indicator span:nth-child(3) { animation-delay: .4s; }
+
+      @keyframes blink {
+        0%, 80%, 100% { opacity: .3; }
+        40% { opacity: 1; }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ── input bar ── */
+      .input-bar {
+        flex-shrink: 0; border-top: 1px solid #ddd; background: #fff;
+        padding: 12px 20px;
+      }
+      .input-wrap {
+        max-width: 780px; margin: 0 auto; display: flex; gap: 8px;
+        align-items: flex-end;
+      }
+      .input-wrap textarea {
+        flex: 1; resize: none; border: 1px solid #d4d0ca; border-radius: 12px;
+        padding: 10px 14px; font-size: 14px; font-family: inherit;
+        line-height: 1.45; min-height: 44px; max-height: 160px;
+        outline: none; transition: border-color .15s;
+      }
+      .input-wrap textarea:focus { border-color: #1c1c1c; }
+      .send-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        border: none; background: #1c1c1c; color: #fff;
+        cursor: pointer; display: flex; align-items: center;
+        justify-content: center; flex-shrink: 0;
+      }
+      .send-btn:disabled { opacity: .4; cursor: not-allowed; }
+      .send-btn svg { fill: #fff; width: 18px; height: 18px; }
+
+      /* ── feedback modal ── */
+      .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,.35); z-index: 100;
+        align-items: center; justify-content: center;
+      }
+      .modal-overlay.open { display: flex; }
+      .modal {
+        background: #fff; border-radius: 12px; padding: 24px;
+        width: 420px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,.18);
+      }
+      .modal h2 { font-size: 16px; margin-bottom: 14px; }
+      .modal label { display: block; font-size: 13px; margin: 10px 0 4px; font-weight: 500; }
+      .modal input, .modal textarea {
+        width: 100%; padding: 8px 10px; border: 1px solid #d4d0ca;
+        border-radius: 6px; font-size: 13px; font-family: inherit;
+      }
+      .modal textarea { min-height: 60px; resize: vertical; }
+      .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+      .modal-actions button {
+        padding: 8px 16px; border-radius: 6px; font-size: 13px;
+        cursor: pointer; border: 1px solid #ccc; background: #fff; font-family: inherit;
+      }
+      .modal-actions .primary {
+        background: #1c1c1c; color: #fff; border-color: #1c1c1c;
+      }
+      .rating-row { display: flex; gap: 10px; }
+      .rating-row > div { flex: 1; }
+
+      /* empty state */
+      .empty-state {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        color: #999; text-align: center; padding: 60px 20px;
+      }
+      .empty-state h2 { font-size: 22px; font-weight: 600; color: #666; margin-bottom: 6px; }
+      .empty-state p { font-size: 14px; }
     </style>
   </head>
   <body>
-    <div class="wrap">
+    <!-- Header -->
+    <div class="header">
       <h1>Adaptive Tutor</h1>
+      <div class="header-actions">
+        <form method="post" action="{% url 'logout' %}" style="margin:0;">
+          {% csrf_token %}
+          <button type="submit">Log out</button>
+        </form>
+      </div>
+    </div>
 
-      <form id="tutor-form">
-        <div class="row">
-          <div>
-            <label for="user-id">User ID</label>
-            <input id="user-id" name="user_id" value="user-123" required />
-          </div>
-          <div>
-            <label for="conversation-id">Conversation ID (optional)</label>
-            <input id="conversation-id" name="conversation_id" placeholder="leave blank for new" />
+    <!-- Settings bar -->
+    <div class="settings-bar">
+      <label for="user-id">User ID</label>
+      <input id="user-id" value="user-123" />
+      <label for="conversation-id">Conversation</label>
+      <input id="conversation-id" placeholder="auto-assigned" />
+      <button class="new-chat-btn" id="new-chat-btn" type="button">+ New Chat</button>
+    </div>
+
+    <!-- Main content: sidebar + chat column -->
+    <div class="main-content">
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h3>Conversations</h3>
+          <button class="sidebar-toggle" id="sidebar-collapse" title="Hide sidebar">◀</button>
+        </div>
+        <div class="sidebar-list" id="sidebar-list">
+          <div class="sidebar-empty" id="sidebar-empty">No past conversations</div>
+        </div>
+      </div>
+
+      <!-- Chat column -->
+      <div class="chat-column">
+        <button class="sidebar-toggle-float" id="sidebar-expand" title="Show sidebar">☰</button>
+
+        <!-- Chat area -->
+        <div class="chat-container" id="chat-container">
+          <div class="chat-messages" id="chat-messages">
+            <div class="empty-state" id="empty-state">
+              <h2>Start a conversation</h2>
+              <p>Ask a question below to begin.</p>
+            </div>
           </div>
         </div>
 
-        <label for="question-text">Question</label>
-        <textarea id="question-text" name="question_text" required>What is backpropagation?</textarea>
+        <!-- Input bar -->
+        <div class="input-bar">
+          <div class="input-wrap">
+            <textarea id="question-text" placeholder="Ask the tutor a question..." rows="1"></textarea>
+            <button class="send-btn" id="send-btn" type="button" title="Send">
+              <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
+        </div>
 
-        <button id="submit-button" type="submit">Ask tutor</button>
-      </form>
+      </div><!-- end .chat-column -->
+    </div><!-- end .main-content -->
 
-      <div id="status" class="panel">Ready.</div>
-      <div id="response" class="panel"></div>
-
-      <div class="tabs">
-        <button id="show-feedback" class="tab-btn" type="button">Open Feedback</button>
-      </div>
-
-      <form id="feedback-form" class="panel hidden">
-        <div class="meta" id="feedback-meta">Provide feedback for the last response.</div>
-        <div class="row">
+    <!-- Feedback modal -->
+    <div class="modal-overlay" id="feedback-modal">
+      <div class="modal">
+        <h2 id="modal-title">Feedback</h2>
+        <div class="rating-row">
           <div>
             <label for="rating-correctness">Correctness (1-5)</label>
-            <input id="rating-correctness" name="rating_correctness" type="number" min="1" max="5" required />
+            <input id="rating-correctness" type="number" min="1" max="5" required />
           </div>
           <div>
             <label for="rating-helpfulness">Helpfulness (1-5)</label>
-            <input id="rating-helpfulness" name="rating_helpfulness" type="number" min="1" max="5" required />
+            <input id="rating-helpfulness" type="number" min="1" max="5" required />
           </div>
           <div>
             <label for="rating-clarity">Clarity (1-5)</label>
-            <input id="rating-clarity" name="rating_clarity" type="number" min="1" max="5" required />
+            <input id="rating-clarity" type="number" min="1" max="5" required />
           </div>
         </div>
         <label for="free-text">Comments (optional)</label>
-        <textarea id="free-text" name="free_text" placeholder="Share details to help improve."></textarea>
-        <button style="display: block; margin: 0 auto;" id="submit-feedback" type="submit">Submit Feedback</button>
-      </form>
+        <textarea id="free-text" placeholder="Share details to help improve."></textarea>
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel">Cancel</button>
+          <button type="button" id="modal-submit" class="primary">Submit</button>
+        </div>
+      </div>
     </div>
 
     <script>
-      const form = document.getElementById("tutor-form");
-      const statusEl = document.getElementById("status");
-      const responseEl = document.getElementById("response");
-      const submitButton = document.getElementById("submit-button");
-      const feedbackForm = document.getElementById("feedback-form");
-      const showFeedbackBtn = document.getElementById("show-feedback");
-      const feedbackMeta = document.getElementById("feedback-meta");
+      /* ── DOM refs ── */
+      const chatContainer = document.getElementById("chat-container");
+      const chatMessages  = document.getElementById("chat-messages");
+      const emptyState    = document.getElementById("empty-state");
+      const questionInput = document.getElementById("question-text");
+      const sendBtn       = document.getElementById("send-btn");
+      const userIdInput   = document.getElementById("user-id");
+      const convIdInput   = document.getElementById("conversation-id");
+      const newChatBtn    = document.getElementById("new-chat-btn");
+      const feedbackModal = document.getElementById("feedback-modal");
+      const modalTitle    = document.getElementById("modal-title");
+      const modalCancel   = document.getElementById("modal-cancel");
+      const modalSubmit   = document.getElementById("modal-submit");
+      const sidebar       = document.getElementById("sidebar");
+      const sidebarList   = document.getElementById("sidebar-list");
+      const sidebarEmpty  = document.getElementById("sidebar-empty");
+      const sidebarCollapse = document.getElementById("sidebar-collapse");
+      const sidebarExpand   = document.getElementById("sidebar-expand");
 
-      let lastTurnId = null;
-      let lastTurnIndex = null;
+      let activeFeedbackTurnId    = null;
+      let activeFeedbackTurnIndex = null;
+      let sending = false;
 
-      function setStatus(text) {
-        statusEl.textContent = text;
+      /* ── helpers ── */
+      function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
       }
 
-      function showFeedbackPanel(turnIndex) {
-        feedbackForm.classList.remove("hidden");
-        showFeedbackBtn.textContent = "Close Feedback";
-        feedbackMeta.textContent = turnIndex !== null && turnIndex !== undefined
-          ? `Provide feedback for turn ${turnIndex}.`
-          : "Provide feedback for the last response.";
+      function hideEmpty() {
+        if (emptyState) emptyState.style.display = "none";
       }
 
-      function hideFeedbackPanel() {
-        feedbackForm.classList.add("hidden");
-        showFeedbackBtn.textContent = "Open Feedback";
+      function addMessage(role, text, turnId, turnIndex, hasFeedback) {
+        hideEmpty();
+        const wrap = document.createElement("div");
+        wrap.className = `msg ${role}`;
+        wrap.dataset.turnId = turnId || "";
+        wrap.dataset.turnIndex = turnIndex ?? "";
+
+        const avatar = document.createElement("div");
+        avatar.className = "msg-avatar";
+        avatar.textContent = role === "user" ? "U" : "T";
+
+        const body = document.createElement("div");
+        body.className = "msg-body";
+        body.textContent = text;
+
+        wrap.appendChild(avatar);
+
+        if (role === "assistant" && turnId) {
+          const footer = document.createElement("div");
+          footer.className = "msg-footer";
+          const fbBtn = document.createElement("button");
+          fbBtn.className = "fb-check" + (hasFeedback ? " done" : "");
+          fbBtn.innerHTML = '<span class="cb-box"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' + (hasFeedback ? 'Feedback submitted' : 'Provide feedback');
+          if (!hasFeedback) {
+            fbBtn.addEventListener("click", () => openFeedbackModal(turnId, turnIndex, fbBtn));
+          }
+          footer.appendChild(fbBtn);
+
+          const col = document.createElement("div");
+          col.appendChild(body);
+          col.appendChild(footer);
+          wrap.appendChild(col);
+        } else {
+          wrap.appendChild(body);
+        }
+
+        chatMessages.appendChild(wrap);
+        scrollToBottom();
+        return wrap;
       }
 
-      form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        responseEl.textContent = "";
-        submitButton.disabled = true;
-        setStatus("Asking...");
+      function addTypingIndicator() {
+        hideEmpty();
+        const wrap = document.createElement("div");
+        wrap.className = "msg assistant";
+        wrap.id = "typing";
+        const avatar = document.createElement("div");
+        avatar.className = "msg-avatar";
+        avatar.textContent = "T";
+        const dots = document.createElement("div");
+        dots.className = "typing-indicator";
+        dots.innerHTML = "<span></span><span></span><span></span>";
+        wrap.appendChild(avatar);
+        wrap.appendChild(dots);
+        chatMessages.appendChild(wrap);
+        scrollToBottom();
+      }
+
+      function removeTypingIndicator() {
+        const el = document.getElementById("typing");
+        if (el) el.remove();
+      }
+
+      /* ── auto-resize textarea ── */
+      questionInput.addEventListener("input", () => {
+        questionInput.style.height = "auto";
+        questionInput.style.height = Math.min(questionInput.scrollHeight, 160) + "px";
+      });
+
+      /* ── send message ── */
+      async function sendMessage() {
+        const text = questionInput.value.trim();
+        if (!text || sending) return;
+        sending = true;
+        sendBtn.disabled = true;
+
+        addMessage("user", text);
+        questionInput.value = "";
+        questionInput.style.height = "auto";
+
+        addTypingIndicator();
 
         const data = {
-          user_id: form.user_id.value.trim(),
-          question_text: form.question_text.value.trim(),
+          user_id: userIdInput.value.trim(),
+          question_text: text,
         };
-        if (form.conversation_id.value.trim()) {
-          data.conversation_id = form.conversation_id.value.trim();
+        if (convIdInput.value.trim()) {
+          data.conversation_id = convIdInput.value.trim();
         }
 
         try {
@@ -193,76 +468,221 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
           });
-
           const payload = await resp.json();
+          removeTypingIndicator();
+
           if (!resp.ok) {
-            if (resp.status === 409 && payload && payload.code === "feedback_required") {
-              // Backend indicates feedback is required for the last turn
-              lastTurnId = payload.last_turn_id || null;
-              lastTurnIndex = payload.last_turn_index || null;
-              alert("Feedback required before asking another question.");
-              showFeedbackPanel(lastTurnIndex);
-              setStatus(`Feedback required for turn ${lastTurnIndex}`);
+            if (resp.status === 409 && payload.code === "feedback_required") {
+              activeFeedbackTurnId = payload.last_turn_id;
+              activeFeedbackTurnIndex = payload.last_turn_index;
+              // remove the user bubble we just appended (the turn wasn't accepted)
+              const lastUserMsg = chatMessages.querySelector(".msg.user:last-of-type");
+              if (lastUserMsg && !lastUserMsg.dataset.turnId) lastUserMsg.remove();
+              // highlight the un-rated checkbox
+              const unrated = document.querySelector(
+                `.msg.assistant[data-turn-id="${payload.last_turn_id}"] .fb-check:not(.done)`
+              );
+              if (unrated) unrated.classList.add("highlight");
+              openFeedbackModal(payload.last_turn_id, payload.last_turn_index, unrated);
+              // restore the text so the user doesn't lose it
+              questionInput.value = text;
             } else {
-              setStatus(`Error ${resp.status}`);
-              responseEl.textContent = JSON.stringify(payload, null, 2);
+              addMessage("assistant", `Error ${resp.status}: ${payload.detail || JSON.stringify(payload)}`, null, null, false);
             }
             return;
           }
 
-          if (payload.conversation_id) {
-            form.conversation_id.value = payload.conversation_id;
-          }
-          lastTurnId = payload.turn_id || null;
-          lastTurnIndex = payload.turn_index || null;
-          setStatus(`Turn ${payload.turn_index}`);
-          responseEl.textContent = payload.tutor_response || "(empty response)";
-          // Make feedback panel accessible after a response
-          showFeedbackPanel(payload.turn_index);
+          if (payload.conversation_id) convIdInput.value = payload.conversation_id;
+          addMessage("assistant", payload.tutor_response || "(empty response)", payload.turn_id, payload.turn_index, false);
+          loadConversationList();
         } catch (err) {
-          setStatus("Request failed.");
-          responseEl.textContent = err.toString();
+          removeTypingIndicator();
+          addMessage("assistant", "Request failed: " + err.toString(), null, null, false);
         } finally {
-          submitButton.disabled = false;
+          sending = false;
+          sendBtn.disabled = false;
+          questionInput.focus();
+        }
+      }
+
+      sendBtn.addEventListener("click", sendMessage);
+      questionInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
         }
       });
 
-      showFeedbackBtn.addEventListener("click", () => {
-        if (feedbackForm.classList.contains("hidden")) {
-          showFeedbackPanel(lastTurnIndex);
-        } else {
-          hideFeedbackPanel();
+      /* ── new chat ── */
+      newChatBtn.addEventListener("click", () => {
+        convIdInput.value = "";
+        chatMessages.innerHTML = "";
+        if (emptyState) {
+          chatMessages.appendChild(emptyState);
+          emptyState.style.display = "";
         }
+        clearActiveConversation();
+        questionInput.focus();
       });
 
-      feedbackForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        if (!lastTurnId) {
-          alert("No recent turn to provide feedback for.");
+      /* ── load history when conversation id changes ── */
+      convIdInput.addEventListener("change", async () => {
+        const cid = convIdInput.value.trim();
+        const uid = userIdInput.value.trim();
+        if (!cid || !uid) return;
+        chatMessages.innerHTML = "";
+        try {
+          const resp = await fetch(`/api/conversations/${cid}/history?user_id=${encodeURIComponent(uid)}`);
+          if (!resp.ok) return;
+          const payload = await resp.json();
+          if (payload.turns && payload.turns.length) {
+            for (const t of payload.turns) {
+              addMessage("user", t.user_text);
+              addMessage("assistant", t.assistant_text, t.turn_id, t.turn_index, t.has_feedback);
+            }
+          }
+        } catch (e) { console.warn("Could not load history:", e); }
+      });
+
+      /* ── sidebar toggle ── */
+      sidebarCollapse.addEventListener("click", () => {
+        sidebar.classList.add("collapsed");
+      });
+      sidebarExpand.addEventListener("click", () => {
+        sidebar.classList.remove("collapsed");
+      });
+
+      /* ── sidebar: load conversation list ── */
+      async function loadConversationList() {
+        const uid = userIdInput.value.trim();
+        if (!uid) return;
+        try {
+          const resp = await fetch(`/api/conversations?user_id=${encodeURIComponent(uid)}`);
+          if (!resp.ok) return;
+          const payload = await resp.json();
+          renderConversationList(payload.conversations || []);
+        } catch (e) { console.warn("Could not load conversations:", e); }
+      }
+
+      function renderConversationList(conversations) {
+        // keep only the empty-state placeholder
+        sidebarList.querySelectorAll(".sidebar-item").forEach(el => el.remove());
+        if (!conversations.length) {
+          sidebarEmpty.style.display = "";
           return;
         }
-        const payload = {
-          user_id: form.user_id.value.trim(),
-          rating_correctness: parseInt(feedbackForm.rating_correctness.value, 10),
-          rating_helpfulness: parseInt(feedbackForm.rating_helpfulness.value, 10),
-          rating_clarity: parseInt(feedbackForm.rating_clarity.value, 10),
-          free_text: feedbackForm.free_text.value.trim() || null,
-        };
+        sidebarEmpty.style.display = "none";
+        const activeId = convIdInput.value.trim();
+        for (const c of conversations) {
+          const btn = document.createElement("button");
+          btn.className = "sidebar-item" + (c.conversation_id === activeId ? " active" : "");
+          btn.dataset.conversationId = c.conversation_id;
+          const preview = document.createElement("span");
+          preview.className = "si-preview";
+          preview.textContent = c.preview || "(empty)";
+          const meta = document.createElement("span");
+          meta.className = "si-meta";
+          const d = new Date(c.updated_at);
+          meta.textContent = `${d.toLocaleDateString()} · ${c.turn_count} turn${c.turn_count !== 1 ? 's' : ''}`;
+          btn.appendChild(preview);
+          btn.appendChild(meta);
+          btn.addEventListener("click", () => selectConversation(c.conversation_id));
+          sidebarList.appendChild(btn);
+        }
+      }
+
+      function clearActiveConversation() {
+        sidebarList.querySelectorAll(".sidebar-item.active").forEach(el => el.classList.remove("active"));
+      }
+
+      async function selectConversation(conversationId) {
+        convIdInput.value = conversationId;
+        // highlight in sidebar
+        clearActiveConversation();
+        const btn = sidebarList.querySelector(`[data-conversation-id="${conversationId}"]`);
+        if (btn) btn.classList.add("active");
+        // load its history
+        chatMessages.innerHTML = "";
+        const uid = userIdInput.value.trim();
         try {
-          const resp = await fetch(`/api/turns/${lastTurnId}/feedback`, {
+          const resp = await fetch(`/api/conversations/${conversationId}/history?user_id=${encodeURIComponent(uid)}`);
+          if (!resp.ok) return;
+          const payload = await resp.json();
+          if (payload.turns && payload.turns.length) {
+            for (const t of payload.turns) {
+              addMessage("user", t.user_text);
+              addMessage("assistant", t.assistant_text, t.turn_id, t.turn_index, t.has_feedback);
+            }
+          }
+        } catch (e) { console.warn("Could not load history:", e); }
+      }
+
+      // refresh conversation list after each successful send
+      const _origSendMessage = sendMessage;
+      // We patch via an event-driven approach instead:
+      // (already wired inline – see the fetch success path)
+
+      // Load conversations on page load and when user_id changes
+      userIdInput.addEventListener("change", loadConversationList);
+      loadConversationList();
+
+      /* ── feedback modal ── */
+      function openFeedbackModal(turnId, turnIndex, triggerBtn) {
+        activeFeedbackTurnId = turnId;
+        activeFeedbackTurnIndex = turnIndex;
+        modalTitle.textContent = `Rate turn ${turnIndex ?? ""}`;
+        feedbackModal.classList.add("open");
+      }
+
+      modalCancel.addEventListener("click", () => {
+        feedbackModal.classList.remove("open");
+      });
+
+      feedbackModal.addEventListener("click", (e) => {
+        if (e.target === feedbackModal) feedbackModal.classList.remove("open");
+      });
+
+      modalSubmit.addEventListener("click", async () => {
+        if (!activeFeedbackTurnId) return;
+        const payload = {
+          user_id: userIdInput.value.trim(),
+          rating_correctness: parseInt(document.getElementById("rating-correctness").value, 10),
+          rating_helpfulness: parseInt(document.getElementById("rating-helpfulness").value, 10),
+          rating_clarity: parseInt(document.getElementById("rating-clarity").value, 10),
+          free_text: document.getElementById("free-text").value.trim() || null,
+        };
+        if (isNaN(payload.rating_correctness) || isNaN(payload.rating_helpfulness) || isNaN(payload.rating_clarity)) {
+          alert("Please fill in all three ratings (1-5).");
+          return;
+        }
+        try {
+          const resp = await fetch(`/api/turns/${activeFeedbackTurnId}/feedback`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-          const data = await resp.json();
           if (!resp.ok) {
+            const data = await resp.json();
             alert(`Failed to submit feedback (${resp.status}).`);
             console.warn(data);
             return;
           }
-          alert("Feedback submitted. You can ask another question now.");
-          setStatus(`Feedback submitted for turn ${lastTurnIndex}.`);
-          hideFeedbackPanel();
+          // Mark the checkbox as checked
+          const btn = document.querySelector(
+            `.msg.assistant[data-turn-id="${activeFeedbackTurnId}"] .fb-check`
+          );
+          if (btn) {
+            btn.classList.add("done");
+            btn.classList.remove("highlight");
+            btn.innerHTML = '<span class="cb-box"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Feedback submitted';
+            btn.replaceWith(btn.cloneNode(true)); // remove listeners
+          }
+          feedbackModal.classList.remove("open");
+          // reset modal inputs
+          document.getElementById("rating-correctness").value = "";
+          document.getElementById("rating-helpfulness").value = "";
+          document.getElementById("rating-clarity").value = "";
+          document.getElementById("free-text").value = "";
         } catch (err) {
           alert("Feedback request failed.");
           console.error(err);

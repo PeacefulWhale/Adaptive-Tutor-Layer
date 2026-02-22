@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign Up – Adaptive Tutor</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Courier New", Courier, monospace;
+        background: #f7f4ef;
+        color: #1c1c1c;
+      }
+      .wrap {
+        max-width: 400px;
+        margin: 80px auto;
+        padding: 0 20px;
+      }
+      h1 { font-size: 24px; }
+      label {
+        display: block;
+        font-size: 13px;
+        margin: 14px 0 6px;
+      }
+      input {
+        width: 100%;
+        font-family: inherit;
+        font-size: 14px;
+        padding: 10px;
+        border: 1px solid #c7c2bb;
+        border-radius: 6px;
+        background: #fffefb;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 18px;
+        width: 100%;
+        padding: 10px 16px;
+        font-size: 14px;
+        border: 1px solid #1c1c1c;
+        border-radius: 999px;
+        background: #1c1c1c;
+        color: #fffefb;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .errors {
+        color: #b00;
+        font-size: 13px;
+      }
+      .helptext {
+        font-size: 12px;
+        color: #6b665e;
+        margin: 4px 0 0;
+      }
+      .link {
+        margin-top: 16px;
+        font-size: 13px;
+      }
+      .link a { color: #1c1c1c; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Sign Up</h1>
+      {% if form.errors %}
+        <div class="errors">
+          {% for field, errs in form.errors.items %}
+            {% for e in errs %}<p>{{ e }}</p>{% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <label for="id_username">Username</label>
+        <input id="id_username" name="username" required autofocus />
+        <label for="id_password1">Password</label>
+        <input id="id_password1" name="password1" type="password" required />
+        <label for="id_password2">Confirm password</label>
+        <input id="id_password2" name="password2" type="password" required />
+        <button type="submit">Create account</button>
+      </form>
+      <p class="link">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+    </div>
+  </body>
+</html>

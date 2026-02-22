@@ -45,7 +45,12 @@ INSTALLED_APPS = [
     'apps.prompt_service',
     'apps.history_service',
     'apps.ratings_service',
+    'apps.accounts',
 ]
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'app'
+LOGOUT_REDIRECT_URL = 'login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
