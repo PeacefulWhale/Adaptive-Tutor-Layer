@@ -247,7 +247,7 @@
           },
 
           bandit: {
-            context: ['Topic=Backprop', 'State=Misconception', 'Goal=Concept repair'],
+            learner_profile: ['Learner=stud-14', 'Recent rewards (discounted)', 'Per-user posterior'],
             picked_from: ['Socratic Probe v4', 'Guided Steps v2', 'Direct Explain v1'],
             selected: 'Socratic Probe v4',
             traffic: [
@@ -263,7 +263,7 @@
               { name: 'Guided Steps v2', weight: 0.24, mean_q: 0.71, tag: 'Scaffold' },
               { name: 'Direct Explain v1', weight: 0.14, mean_q: 0.66, tag: 'Direct' },
             ],
-            note: 'Bandit explores, then shifts traffic to the best policy for this student state.',
+            note: 'Bandit explores, then shifts traffic to the best policy for this learner using reward history.',
           },
 
           static_policy: {
@@ -314,7 +314,7 @@
           { id: 'llm', label: 'Language Model', color: '#F472B6', x: 57.9, y: 29.4 },
         ],
         edges: [
-          { from: 'student', to: 'bandit',        color: '#60A5FA', label: 'Student context' },      // 1a
+          { from: 'student', to: 'bandit',        color: '#60A5FA', label: 'Learner identity/history' }, // 1a
           { from: 'student', to: 'static_policy', color: '#FB923C', label: 'Control path' },        // 1b
           { from: 'policies', to: 'bandit',       color: '#93C5FD', label: 'Policy candidates' },    // 2
           { from: 'bandit', to: 'llm',            color: '#34D399', label: 'Selected policy' },      // 3a
@@ -456,7 +456,7 @@
             <div {...common}>
               {header('fa-solid fa-crosshairs', 'Policy Selector')}
               <div className="body" style={{ marginBottom: 8 }}>
-                {snapshot.policy.current} • {snapshot.bandit.context.join(', ')}
+                {snapshot.policy.current} • {snapshot.bandit.learner_profile.join(', ')}
               </div>
               <div style={{ marginBottom: 6, fontSize: 12, color: '#c7d4f2' }}>Traffic (last turns)</div>
               {snapshot.bandit.traffic.map((t) => (
