@@ -4,6 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>nlitenAI · Adaptive Tutor</title>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.33/dist/katex.min.css" integrity="sha384-fgYS3VC1089n2J3rVcEbXDHlnDLQ9B2Y1hvpQ720q1NvxCduQqT4JoGc4u2QCnzE" crossorigin="anonymous">
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.33/dist/katex.min.js" integrity="sha384-YPHNAPyrxGS8BNnA7Q4ommqra8WQPEjooVSLzFgwgs8OXJBvadbyvx4QpfiFurGr" crossorigin="anonymous"></script>
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.33/dist/contrib/auto-render.min.js" integrity="sha384-JKXHIJf8PKPyDFptuKZoUyMRQJAmQKj4B4xyOca62ebJhciMYGiDdq/9twUUWyZH" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <!-- highlight.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/github-dark.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+    <!-- markdown-it -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <style>
       :root { color-scheme: dark; }
       * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -144,8 +156,58 @@
 
       .msg-body {
         padding: 10px 14px; border-radius: 16px; line-height: 1.55;
-        font-size: 14px; white-space: pre-wrap; word-break: break-word;
+        font-size: 14px; word-break: break-word;
       }
+
+      /* ── rendered markdown inside bubbles ── */
+      .msg-body p { margin: 0 0 .6em; }
+      .msg-body p:last-child { margin-bottom: 0; }
+      .msg-body ul, .msg-body ol { margin: .4em 0; padding-left: 1.5em; }
+      .msg-body li { margin-bottom: .25em; }
+      .msg-body h1, .msg-body h2, .msg-body h3,
+      .msg-body h4, .msg-body h5, .msg-body h6 {
+        margin: .8em 0 .4em; line-height: 1.3;
+      }
+      .msg-body h1 { font-size: 1.3em; } .msg-body h2 { font-size: 1.15em; }
+      .msg-body h3 { font-size: 1.05em; }
+      .msg-body code {
+        background: rgba(138, 43, 226, 0.15); padding: 1px 5px; border-radius: 4px;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.9em;
+      }
+      .msg-body pre {
+        background: rgba(13, 13, 21, 0.7); border: 1px solid rgba(138, 43, 226, 0.15);
+        border-radius: 8px; padding: 10px 12px; overflow-x: auto; margin: .6em 0;
+      }
+      .msg-body pre code { background: none; padding: 0; font-size: 0.88em; }
+
+      /* highlight.js overrides */
+      .msg-body pre code.hljs { background: transparent; padding: 0; }
+      .msg-body pre.hljs-pre {
+        background: rgba(13, 13, 21, 0.85); border: 1px solid rgba(138, 43, 226, 0.15);
+        border-radius: 8px; padding: 10px 12px; overflow-x: auto; margin: .6em 0;
+      }
+      .msg-body .code-block-wrapper { position: relative; }
+      .msg-body .code-block-wrapper[data-lang]::before {
+        content: attr(data-lang);
+        position: absolute; top: 0; right: 0;
+        padding: 2px 10px; font-size: 11px; color: #9e8fc1;
+        background: rgba(45, 27, 105, 0.3); border-radius: 0 8px 0 6px;
+        text-transform: uppercase; letter-spacing: .5px; pointer-events: none;
+      }
+      .msg-body blockquote {
+        border-left: 3px solid #8a2be2; margin: .6em 0; padding: .2em 0 .2em .8em;
+        color: #d5cfc8;
+      }
+      .msg-body table { border-collapse: collapse; margin: .6em 0; width: 100%; font-size: 0.92em; }
+      .msg-body th, .msg-body td {
+        border: 1px solid rgba(138, 43, 226, 0.2); padding: 4px 8px; text-align: left;
+      }
+      .msg-body th { background: rgba(45, 27, 105, 0.25); font-weight: 600; }
+      .msg-body hr { border: none; border-top: 1px solid rgba(138, 43, 226, 0.2); margin: .8em 0; }
+      .msg-body a { color: #c77dff; text-decoration: underline; }
+      .msg-body .katex-display { margin: .6em 0; overflow-x: auto; }
+      .msg-body img { max-width: 100%; border-radius: 6px; }
       .msg.user .msg-body {
         background: #2d1b69; color: #e6dfd8; border-bottom-right-radius: 4px;
       }
@@ -399,6 +461,97 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
 
+      /* ── Markdown + highlight.js + KaTeX rendering ── */
+
+      const md = window.markdownit({
+        html: false,
+        linkify: true,
+        typographer: true,
+        breaks: true,
+        highlight: function (str, lang) {
+          if (lang && hljs.getLanguage(lang)) {
+            try {
+              return '<pre class="hljs-pre"><code class="hljs">' +
+                hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+                '</code></pre>';
+            } catch (_) {}
+          }
+          return '<pre class="hljs-pre"><code class="hljs">' +
+            md.utils.escapeHtml(str) + '</code></pre>';
+        },
+      });
+
+      // Override fence renderer to wrap highlighted blocks with a language label
+      const defaultFence = md.renderer.rules.fence;
+      md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+        const token = tokens[idx];
+        const lang = (token.info || '').trim().split(/\s+/)[0];
+        const rendered = defaultFence
+          ? defaultFence(tokens, idx, options, env, self)
+          : self.renderToken(tokens, idx, options);
+        if (lang) {
+          return '<div class="code-block-wrapper" data-lang="'
+            + md.utils.escapeHtml(lang) + '">' + rendered + '</div>';
+        }
+        return rendered;
+      };
+
+      /**
+       * Protect math delimiters from markdown-it.
+       * Extracts $$…$$, $…$, \[…\], \(…\) into placeholders,
+       * runs markdown-it, then restores the original math source.
+       */
+      function renderMarkdownLatex(text) {
+        const mathBlocks = [];
+        // Can't use  \x00 (null char) as placeholder because markdown-it removes it, so use a unique string instead
+        const placeholder = (i) => '{MATH' + i + '}';
+
+        // Order matters: match display ($$, \[) before inline ($, \()
+        let processed = text
+          // $$…$$ (display, may span lines)
+          .replace(/\$\$([\s\S]+?)\$\$/g, (m) => {
+            mathBlocks.push(m);
+            return placeholder(mathBlocks.length - 1);
+          })
+          // \[…\] (display)
+          .replace(/\\\[([\s\S]+?)\\\]/g, (m) => {
+            mathBlocks.push(m);
+            return placeholder(mathBlocks.length - 1);
+          })
+          // $…$ (inline, no newlines)
+          .replace(/\$([^\$\n]+?)\$/g, (m) => {
+            mathBlocks.push(m);
+            return placeholder(mathBlocks.length - 1);
+          })
+          // \(…\) (inline)
+          .replace(/\\\((.+?)\\\)/g, (m) => {
+            mathBlocks.push(m);
+            return placeholder(mathBlocks.length - 1);
+          });
+
+        let html = md.render(processed);
+
+        // Restore math source text inside the HTML
+        for (let i = 0; i < mathBlocks.length; i++) {
+          html = html.replace(placeholder(i), mathBlocks[i]);
+          console.log("Restoring math block:", mathBlocks[i] + " at placeholder: " + placeholder(i));
+        }
+        return html;
+      }
+
+      function applyKatex(el) {
+        if (typeof renderMathInElement !== "function") return;
+        renderMathInElement(el, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+            { left: "\\[", right: "\\]", display: true },
+            { left: "\\(", right: "\\)", display: false },
+          ],
+          throwOnError: false,
+        });
+      }
+
       function hideEmpty() {
         if (emptyState) emptyState.style.display = "none";
       }
@@ -416,7 +569,12 @@
 
         const body = document.createElement("div");
         body.className = "msg-body";
-        body.textContent = text;
+        if (role === "user") {
+          body.textContent = text;
+        } else {
+          body.innerHTML = renderMarkdownLatex(text);
+          applyKatex(body);
+        }
 
         wrap.appendChild(avatar);
 
