@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Adaptive Tutor Layer · Ninja Panel</title>
+    <title>nlitenAI · Adaptive Tutor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -27,10 +27,10 @@
       body {
         margin: 0;
         font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
-        background: radial-gradient(circle at 20% 20%, rgba(89, 129, 255, 0.08), transparent 40%),
-          radial-gradient(circle at 80% 0%, rgba(255, 114, 94, 0.08), transparent 35%),
-          #05070f;
-        color: #e9ecf5;
+        background: radial-gradient(circle at 20% 20%, rgba(45, 27, 105, 0.25), transparent 40%),
+          radial-gradient(circle at 80% 0%, rgba(255, 100, 60, 0.12), transparent 35%),
+          #0d0d15;
+        color: #e6dfd8;
         min-height: 100vh;
       }
       h1 {
@@ -51,18 +51,23 @@
         gap: 10px;
       }
       .muted {
-        color: #8fa6d1;
+        color: #9e8fc1;
         font-size: 13px;
       }
       .btn {
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.04);
-        color: #fff;
+        border: 1px solid rgba(138, 43, 226, 0.35);
+        background: rgba(45, 27, 105, 0.3);
+        color: #e6dfd8;
         border-radius: 12px;
         padding: 10px 14px;
         font-weight: 600;
         letter-spacing: 0.3px;
         cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .btn:hover {
+        background: rgba(138, 43, 226, 0.25);
+        border-color: rgba(138, 43, 226, 0.55);
       }
       .btn:active {
         transform: translateY(1px);
@@ -73,8 +78,8 @@
         min-height: 88vh;
         border-radius: 20px;
         overflow: hidden;
-        background: linear-gradient(135deg, rgba(19, 30, 54, 0.9), rgba(9, 14, 28, 0.92));
-        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        background: linear-gradient(135deg, rgba(45, 27, 105, 0.35), rgba(13, 13, 21, 0.95));
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(138, 43, 226, 0.08);
       }
       .stage {
         position: absolute;
@@ -91,9 +96,9 @@
         max-width: 260px;
         padding: 14px;
         border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.04);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(138, 43, 226, 0.15);
+        background: rgba(45, 27, 105, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(4px);
       }
       .node h3 {
@@ -104,7 +109,7 @@
       }
       .node .body {
         font-size: 13px;
-        color: #c7d4f2;
+        color: #d5cfc8;
         line-height: 1.5;
         display: -webkit-box;
         -webkit-line-clamp: 4;
@@ -117,7 +122,7 @@
         inset: -1px;
         border-radius: 14px;
         pointer-events: none;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        box-shadow: inset 0 0 0 1px rgba(138, 43, 226, 0.06);
       }
       .node:active { cursor: grabbing; }
       .badge {
@@ -128,8 +133,8 @@
         border-radius: 999px;
         font-size: 12px;
         letter-spacing: 0.2px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(45, 27, 105, 0.3);
+        border: 1px solid rgba(138, 43, 226, 0.15);
       }
       .legend {
         position: absolute;
@@ -137,8 +142,8 @@
         right: 16px;
         display: grid;
         gap: 6px;
-        background: rgba(0, 0, 0, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(13, 13, 21, 0.6);
+        border: 1px solid rgba(138, 43, 226, 0.15);
         border-radius: 12px;
         padding: 10px 12px;
         font-size: 12px;
@@ -162,10 +167,10 @@
       }
       .edge-label {
         font-size: 11px;
-        fill: #c7d4f2;
+        fill: #d5cfc8;
         letter-spacing: 0.2px;
         paint-order: stroke;
-        stroke: rgba(5, 7, 15, 0.6);
+        stroke: rgba(13, 13, 21, 0.7);
         stroke-width: 3px;
         stroke-linecap: round;
         stroke-linejoin: round;
@@ -181,7 +186,7 @@
       .modal-backdrop {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.55);
+        background: rgba(13, 13, 21, 0.7);
         display: grid;
         place-items: center;
         z-index: 20;
@@ -189,12 +194,12 @@
       }
       .modal {
         width: min(480px, 90vw);
-        background: #0c1224;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #0d0d15;
+        border: 1px solid rgba(138, 43, 226, 0.2);
         border-radius: 12px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         padding: 18px;
-        color: #e9ecf5;
+        color: #e6dfd8;
       }
       .modal h4 {
         margin: 0 0 10px;
@@ -212,12 +217,12 @@
         text-align: left;
       }
       .modal th {
-        color: #8fa6d1;
+        color: #9e8fc1;
         font-weight: 600;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(138, 43, 226, 0.15);
       }
       .modal tr + tr td {
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
+        border-top: 1px solid rgba(138, 43, 226, 0.08);
       }
     </style>
   </head>
@@ -304,25 +309,25 @@
 
       const layout = {
         nodes: [
-          { id: 'student', label: 'Student Input', color: '#60A5FA', x: 13.6, y: 16.6 },
-          { id: 'bandit', label: 'Policy Selector (Bandit)', color: '#34D399', x: 29.0, y: 50.6 },
-          { id: 'policies', label: 'Available Policies', color: '#93C5FD', x: 13.4, y: 86.1 },
-          { id: 'static_policy', label: 'Static Policy (Control)', color: '#FB923C', x: 37.2, y: 14.5 },
-          { id: 'adaptive', label: 'Adaptive Tutor', color: '#2DD4BF', x: 85.5, y: 64.9 },
-          { id: 'baseline', label: 'Baseline Tutor', color: '#FBBF24', x: 85.1, y: 23.3 },
-          { id: 'qscore', label: 'Q-score Evaluator', color: '#67E8F9', x: 54.2, y: 73.3 },
-          { id: 'llm', label: 'Language Model', color: '#F472B6', x: 57.9, y: 29.4 },
+          { id: 'student', label: 'Student Input', color: '#8a2be2', x: 13.6, y: 16.6 },
+          { id: 'bandit', label: 'Policy Selector (Bandit)', color: '#ff643c', x: 29.0, y: 50.6 },
+          { id: 'policies', label: 'Available Policies', color: '#a855f7', x: 13.4, y: 86.1 },
+          { id: 'static_policy', label: 'Static Policy (Control)', color: '#e6dfd8', x: 37.2, y: 14.5 },
+          { id: 'adaptive', label: 'Adaptive Tutor', color: '#c77dff', x: 85.5, y: 64.9 },
+          { id: 'baseline', label: 'Baseline Tutor', color: '#cfbfb0', x: 85.1, y: 23.3 },
+          { id: 'qscore', label: 'Q-score Evaluator', color: '#ff8a6c', x: 54.2, y: 73.3 },
+          { id: 'llm', label: 'Language Model', color: '#b44de8', x: 57.9, y: 29.4 },
         ],
         edges: [
-          { from: 'student', to: 'bandit',        color: '#60A5FA', label: 'Learner identity/history' }, // 1a
-          { from: 'student', to: 'static_policy', color: '#FB923C', label: 'Control path' },        // 1b
-          { from: 'policies', to: 'bandit',       color: '#93C5FD', label: 'Policy candidates' },    // 2
-          { from: 'bandit', to: 'llm',            color: '#34D399', label: 'Selected policy' },      // 3a
-          { from: 'static_policy', to: 'llm',     color: '#FB923C', label: 'Fixed prompt' },         // 3b
-          { from: 'llm', to: 'adaptive',          color: '#2DD4BF', label: 'Tutor response' },       // 4a
-          { from: 'llm', to: 'baseline',          color: '#FBBF24', label: 'Tutor response' },       // 4b
-          { from: 'adaptive', to: 'qscore',       color: '#67E8F9', label: 'Score adaptive' },       // 5
-          { from: 'qscore', to: 'policies',       color: '#67E8F9', label: 'Reward update' },        // 6
+          { from: 'student', to: 'bandit',        color: '#8a2be2', label: 'Learner identity/history' }, // 1a
+          { from: 'student', to: 'static_policy', color: '#e6dfd8', label: 'Control path' },        // 1b
+          { from: 'policies', to: 'bandit',       color: '#a855f7', label: 'Policy candidates' },    // 2
+          { from: 'bandit', to: 'llm',            color: '#ff643c', label: 'Selected policy' },      // 3a
+          { from: 'static_policy', to: 'llm',     color: '#e6dfd8', label: 'Fixed prompt' },         // 3b
+          { from: 'llm', to: 'adaptive',          color: '#c77dff', label: 'Tutor response' },       // 4a
+          { from: 'llm', to: 'baseline',          color: '#cfbfb0', label: 'Tutor response' },       // 4b
+          { from: 'adaptive', to: 'qscore',       color: '#ff8a6c', label: 'Score adaptive' },       // 5
+          { from: 'qscore', to: 'policies',       color: '#ff8a6c', label: 'Reward update' },        // 6
         ],
       };
 
@@ -386,7 +391,7 @@
         const color = status === 'warn' ? '#ffd273' : status === 'alert' ? '#ff9b9b' : '#8be7c7';
         const label = status === 'warn' ? 'Warning' : status === 'alert' ? 'Alert' : 'Stable';
         return (
-          <span className="badge" style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.12)' }}>
+          <span className="badge" style={{ background: 'rgba(45,27,105,0.3)', borderColor: 'rgba(138,43,226,0.2)' }}>
             <span style={{ color }}>●</span> {label}
           </span>
         );
@@ -394,11 +399,11 @@
 
       const Bar = ({ label, value, color }) => (
         <div style={{ marginBottom: 6 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#c7d4f2' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#d5cfc8' }}>
             <span>{label}</span>
             <span className="mono">{Math.round(value * 100)}%</span>
           </div>
-          <div style={{ height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+          <div style={{ height: 6, borderRadius: 999, background: 'rgba(45,27,105,0.25)', overflow: 'hidden' }}>
             <div style={{ width: `${value * 100}%`, height: '100%', background: color, borderRadius: 999 }} />
           </div>
         </div>
@@ -458,7 +463,7 @@
               <div className="body" style={{ marginBottom: 8 }}>
                 {snapshot.policy.current} • {snapshot.bandit.learner_profile.join(', ')}
               </div>
-              <div style={{ marginBottom: 6, fontSize: 12, color: '#c7d4f2' }}>Traffic (last turns)</div>
+              <div style={{ marginBottom: 6, fontSize: 12, color: '#d5cfc8' }}>Traffic (last turns)</div>
               {snapshot.bandit.traffic.map((t) => (
                 <Bar key={t.name} label={t.name} value={t.share} color={node.color} />
               ))}
@@ -536,9 +541,9 @@
                 <div className="badge">Q {snapshot.qscore.q.toFixed(2)}</div>
                 <div className="badge">Δ {snapshot.qscore.delta_vs_baseline.toFixed(2)}</div>
               </div>
-              <Bar label="Correctness" value={c.correctness} color="#67E8F9" />
-              <Bar label="Clarity" value={c.clarity} color="#7dd3fc" />
-              <Bar label="Pedagogy" value={c.pedagogy} color="#38bdf8" />
+              <Bar label="Correctness" value={c.correctness} color="#8a2be2" />
+              <Bar label="Clarity" value={c.clarity} color="#a855f7" />
+              <Bar label="Pedagogy" value={c.pedagogy} color="#c77dff" />
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
                 {snapshot.qscore.rubric.map((r) => (
                   <span className="badge" key={r}>{r}</span>
@@ -787,9 +792,23 @@
         return (
           <div className="shell">
             <div className="topbar">
-              <div>
-                <div className="muted">Adaptive Tutor Layer · Ninja Panel</div>
-                <h1>{snapshot.id}</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <svg width="140" height="41" viewBox="0 0 140 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M23.8829 20.8735C23.8812 20.473 23.783 20.0726 23.5902 19.7086L14.2434 2.08352C13.3027 0.309721 10.7644 0.299297 9.80978 2.06615L6.86503 7.51698C5.90516 9.29339 6.25784 11.4902 7.71892 12.8827C7.73716 12.9001 7.75541 12.9174 7.77452 12.9357C8.16541 13.3066 8.7839 13.2875 9.15047 12.8922L11.376 10.4904C11.5506 10.3019 11.8546 10.5017 11.7512 10.7371L10.3266 13.9659C10.1529 14.3594 10.2597 14.8198 10.589 15.0969L14.6126 18.4777C14.8193 18.6514 14.6056 18.9763 14.3642 18.8556L9.66385 16.5041C9.27903 16.3122 8.8143 16.3964 8.52156 16.7117L6.1232 19.3003C5.9486 19.4888 5.64457 19.289 5.74794 19.0536L7.15777 15.8587C7.32803 15.4722 7.229 15.0187 6.90933 14.7407C6.89804 14.7312 6.88762 14.7216 6.87632 14.7121C5.51861 13.5272 3.41385 13.9051 2.55735 15.4904L0.302315 19.6669C0.0990492 20.043 -0.00171523 20.4591 2.20845e-05 20.8743C0.0017594 21.2748 0.0999178 21.6752 0.29276 22.0392L9.63866 39.6634C10.5794 41.4372 13.1176 41.4477 14.0723 39.6808L17.017 34.23C17.9769 32.4536 17.6242 30.2567 16.1632 28.8643C16.1449 28.8469 16.1267 28.8295 16.1076 28.8113C15.7167 28.4404 15.0982 28.4595 14.7316 28.8547L12.5061 31.2566C12.3315 31.4451 12.0275 31.2453 12.1308 31.0099L13.5554 27.7811C13.7292 27.3875 13.6223 26.9272 13.2931 26.6501L9.26948 23.2692C9.06274 23.0955 9.27643 22.7706 9.51791 22.8914L14.2182 25.2428C14.603 25.4348 15.0678 25.3505 15.3605 25.0352L17.7589 22.4466C17.9335 22.2581 18.2375 22.4579 18.1341 22.6933L16.7243 25.8882C16.5541 26.2748 16.6531 26.7282 16.9727 27.0062C16.984 27.0158 16.9945 27.0253 17.0058 27.0349C18.3635 28.2197 20.4682 27.8419 21.3247 26.2566L23.5815 22.08C23.7848 21.7039 23.8855 21.2878 23.8838 20.8726L23.8829 20.8735Z" fill="#E6DFD8"/>
+                  <path d="M44.5647 30.6285V20.7614C44.5647 19.3715 43.6613 18.0164 41.5765 18.0164C39.4918 18.0164 38.4146 19.3368 38.4146 20.7961V30.6285H34.3154V14.8901H38.068V16.9749H38.1028C38.763 15.446 40.2918 14.4731 42.9317 14.4731C46.4063 14.4731 48.6987 16.5232 48.6987 19.9275V30.6285H44.5647Z" fill="#E6DFD8"/>
+                  <path d="M57.3848 30.7326C54.0492 30.7326 52.3127 28.3351 52.3127 25.2783V5.8916H56.4119V24.9656C56.4119 26.286 57.0374 27.1199 58.184 27.2589L57.3848 30.7335V30.7326Z" fill="#E6DFD8"/>
+                  <path d="M60.9624 30.6285V14.8901H65.132V30.6285H60.9624Z" fill="#E6DFD8"/>
+                  <path d="M78.9236 18.364H74.06V25.1735C74.06 26.8065 74.8939 27.3972 76.4228 27.3972C76.9092 27.3972 77.3262 27.3277 77.7779 27.1887L77.4304 30.4896C76.9787 30.6981 76.2143 30.8371 75.3804 30.8371C72.1837 30.8371 69.9608 29.065 69.9608 25.9735V18.3649H67.4243V14.8903H69.9608V11.6241L74.06 9.85205V14.8894H79.688L78.9236 18.364Z" fill="#E6DFD8"/>
+                  <path d="M80.3129 22.742C80.3129 17.4962 84.3087 14.4385 88.3384 14.4385C92.7156 14.4385 95.2868 17.4267 95.2868 20.6572C95.2868 21.2479 95.2521 21.6996 95.1478 22.1166L93.202 23.8191H84.3078C84.7248 26.0081 86.5316 27.7107 89.6232 27.7107C91.6037 27.7107 93.0631 27.1895 94.1741 26.4946L93.7571 30.1082C92.6105 30.6989 91.1164 31.0811 88.9977 31.0811C84.2384 31.0811 80.312 27.7455 80.312 22.7429L80.3129 22.742ZM84.4824 20.9004H91.2919C91.3266 20.7614 91.3266 20.6225 91.3266 20.4835C91.3266 19.1284 90.18 17.6343 88.4079 17.6343C86.9833 17.6343 85.1418 18.5377 84.4816 20.9004H84.4824Z" fill="#E6DFD8"/>
+                  <path d="M108.314 30.6285V20.7614C108.314 19.3715 107.411 18.0164 105.326 18.0164C103.242 18.0164 102.164 19.3368 102.164 20.7961V30.6285H98.0652V14.8901H101.818V16.9749H101.853C102.513 15.446 104.042 14.4731 106.681 14.4731C110.156 14.4731 112.448 16.5232 112.448 19.9275V30.6285H108.314Z" fill="#E6DFD8"/>
+                  <path d="M123.949 8.1499H124.991L134.267 30.6282H131.349L128.917 24.6527H119.953L117.486 30.6282H114.671L123.948 8.1499H123.949ZM120.891 22.3594H127.978L125.477 16.2449C125.094 15.3763 124.782 14.2644 124.469 13.1873H124.399C124.087 14.2644 123.739 15.3763 123.392 16.2449L120.89 22.3594H120.891Z" fill="#E6DFD8"/>
+                  <path d="M138.263 13.1181C137.707 13.1181 136.56 11.9715 136.56 11.4155C136.56 10.8249 137.707 9.67822 138.263 9.67822C138.853 9.67822 140 10.8249 140 11.4155C140 11.9715 138.853 13.1181 138.263 13.1181ZM136.908 30.6285V14.8902H139.652V30.6285H136.908Z" fill="#E6DFD8"/>
+                  <path d="M65.0747 9.60246L63.4477 12.6141C63.2688 12.9451 62.7928 12.9433 62.6164 12.6106L61.0172 9.59464C60.9434 9.45566 60.9443 9.28801 61.019 9.14989L62.646 6.13825C62.8249 5.80729 63.3009 5.80903 63.4773 6.14173L65.0765 9.15771C65.1503 9.29669 65.1495 9.46434 65.0747 9.60246Z" fill="#E6DFD8"/>
+                </svg>
+                <div>
+                  <div className="muted">Adaptive Tutor Layer</div>
+                  <h1>{snapshot.id}</h1>
+                </div>
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button className="btn" onClick={() => setShowCoords((v) => !v)}>
