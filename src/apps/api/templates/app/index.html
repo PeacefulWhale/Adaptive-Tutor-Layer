@@ -3,14 +3,26 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Adaptive Tutor</title>
+    <title>nlitenAI · Adaptive Tutor</title>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.33/dist/katex.min.css" integrity="sha384-fgYS3VC1089n2J3rVcEbXDHlnDLQ9B2Y1hvpQ720q1NvxCduQqT4JoGc4u2QCnzE" crossorigin="anonymous">
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.33/dist/katex.min.js" integrity="sha384-YPHNAPyrxGS8BNnA7Q4ommqra8WQPEjooVSLzFgwgs8OXJBvadbyvx4QpfiFurGr" crossorigin="anonymous"></script>
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.33/dist/contrib/auto-render.min.js" integrity="sha384-JKXHIJf8PKPyDFptuKZoUyMRQJAmQKj4B4xyOca62ebJhciMYGiDdq/9twUUWyZH" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <!-- highlight.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/github-dark.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+    <!-- markdown-it -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <style>
-      :root { color-scheme: light; }
+      :root { color-scheme: dark; }
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: #f0ede8;
-        color: #1c1c1c;
+        background: #0d0d15;
+        color: #e6dfd8;
         height: 100vh;
         display: flex;
         flex-direction: column;
@@ -22,35 +34,46 @@
         justify-content: space-between;
         align-items: center;
         padding: 12px 20px;
-        background: #fff;
-        border-bottom: 1px solid #ddd;
+        background: #2d1b69;
+        border-bottom: 1px solid rgba(138, 43, 226, 0.25);
         flex-shrink: 0;
       }
-      .header h1 { font-size: 18px; font-weight: 600; }
+      .header-left { display: flex; align-items: center; gap: 12px; }
+      .header h1 { font-size: 18px; font-weight: 600; color: #e6dfd8; }
       .header-actions { display: flex; gap: 8px; align-items: center; }
       .header-actions button, .header-actions .btn {
         padding: 6px 14px; font-size: 13px; border-radius: 6px;
-        border: 1px solid #c7c2bb; background: #fff; color: #1c1c1c;
+        border: 1px solid rgba(138, 43, 226, 0.4); background: rgba(138, 43, 226, 0.15); color: #e6dfd8;
         cursor: pointer; text-decoration: none; font-family: inherit;
+        transition: background .15s, border-color .15s;
       }
-      .header-actions button:hover, .header-actions .btn:hover { background: #f5f3ef; }
+      .header-actions button:hover, .header-actions .btn:hover { background: rgba(138, 43, 226, 0.3); border-color: rgba(138, 43, 226, 0.6); }
 
       /* ── sidebar / settings ── */
       .settings-bar {
         display: flex; gap: 12px; align-items: center;
-        padding: 8px 20px; background: #faf9f6;
-        border-bottom: 1px solid #e8e5df; flex-shrink: 0; font-size: 13px;
+        padding: 8px 20px; background: rgba(45, 27, 105, 0.2);
+        border-bottom: 1px solid rgba(138, 43, 226, 0.15); flex-shrink: 0; font-size: 13px;
+        color: #d5cfc8;
       }
-      .settings-bar label { font-weight: 500; }
+      .settings-bar label { font-weight: 500; color: #e6dfd8; }
       .settings-bar input {
-        padding: 5px 8px; border: 1px solid #d4d0ca; border-radius: 5px;
+        padding: 5px 8px; border: 1px solid rgba(138, 43, 226, 0.25); border-radius: 5px;
         font-size: 13px; font-family: inherit; width: 140px;
+        background: rgba(13, 13, 21, 0.6); color: #e6dfd8;
+      }
+      .settings-bar input:focus { outline: none; border-color: #8a2be2; }
+      .settings-bar input[readonly] {
+        cursor: default; opacity: 0.8;
+        user-select: all; -webkit-user-select: all;
       }
       .new-chat-btn {
         margin-left: auto; padding: 5px 12px; font-size: 13px;
-        border-radius: 5px; border: 1px solid #1c1c1c;
-        background: #1c1c1c; color: #fff; cursor: pointer;
+        border-radius: 5px; border: 1px solid #8a2be2;
+        background: #8a2be2; color: #fff; cursor: pointer;
+        transition: background .15s;
       }
+      .new-chat-btn:hover { background: #7b25cc; }
 
       /* ── main layout ── */
       .main-content {
@@ -59,51 +82,51 @@
 
       /* ── sidebar ── */
       .sidebar {
-        width: 280px; background: #fff; border-right: 1px solid #e0ddd7;
+        width: 280px; background: rgba(13, 13, 21, 0.95); border-right: 1px solid rgba(138, 43, 226, 0.12);
         display: flex; flex-direction: column; flex-shrink: 0;
         transition: margin-left .25s ease;
       }
       .sidebar.collapsed { margin-left: -280px; }
       .sidebar-header {
-        padding: 12px 16px; border-bottom: 1px solid #e8e5df;
+        padding: 12px 16px; border-bottom: 1px solid rgba(138, 43, 226, 0.15);
         display: flex; justify-content: space-between; align-items: center;
       }
-      .sidebar-header h3 { font-size: 14px; font-weight: 600; margin: 0; }
+      .sidebar-header h3 { font-size: 14px; font-weight: 600; margin: 0; color: #e6dfd8; }
       .sidebar-toggle {
-        width: 28px; height: 28px; border: 1px solid #d4d0ca; border-radius: 6px;
-        background: #fff; cursor: pointer; display: flex; align-items: center;
-        justify-content: center; font-size: 14px; color: #555;
+        width: 28px; height: 28px; border: 1px solid rgba(138, 43, 226, 0.3); border-radius: 6px;
+        background: rgba(45, 27, 105, 0.2); cursor: pointer; display: flex; align-items: center;
+        justify-content: center; font-size: 14px; color: #d5cfc8;
       }
-      .sidebar-toggle:hover { background: #f5f3ef; }
+      .sidebar-toggle:hover { background: rgba(138, 43, 226, 0.2); }
       .sidebar-list {
         flex: 1; overflow-y: auto; padding: 8px 0;
       }
       .sidebar-item {
         display: block; width: 100%; text-align: left; background: none;
         border: none; padding: 10px 16px; cursor: pointer;
-        font-family: inherit; font-size: 13px; color: #333;
+        font-family: inherit; font-size: 13px; color: #d5cfc8;
         border-left: 3px solid transparent; transition: all .12s ease;
       }
-      .sidebar-item:hover { background: #f5f3ef; }
-      .sidebar-item.active { background: #edeae4; border-left-color: #1c1c1c; font-weight: 500; }
+      .sidebar-item:hover { background: rgba(138, 43, 226, 0.1); }
+      .sidebar-item.active { background: rgba(138, 43, 226, 0.18); border-left-color: #8a2be2; font-weight: 500; color: #e6dfd8; }
       .sidebar-item .si-preview {
         display: block; white-space: nowrap; overflow: hidden;
         text-overflow: ellipsis; line-height: 1.4;
       }
       .sidebar-item .si-meta {
-        display: flex; gap: 8px; font-size: 11px; color: #999; margin-top: 3px;
+        display: flex; gap: 8px; font-size: 11px; color: #9e8fc1; margin-top: 3px;
       }
       .sidebar-empty {
-        padding: 20px 16px; text-align: center; color: #aaa; font-size: 13px;
+        padding: 20px 16px; text-align: center; color: #9e8fc1; font-size: 13px;
       }
       .sidebar-toggle-float {
         position: absolute; top: 10px; left: 10px; z-index: 10;
-        width: 32px; height: 32px; border: 1px solid #d4d0ca; border-radius: 6px;
-        background: #fff; cursor: pointer; display: none; align-items: center;
-        justify-content: center; font-size: 16px; color: #555;
-        box-shadow: 0 1px 4px rgba(0,0,0,.1);
+        width: 32px; height: 32px; border: 1px solid rgba(138, 43, 226, 0.3); border-radius: 6px;
+        background: rgba(13, 13, 21, 0.9); cursor: pointer; display: none; align-items: center;
+        justify-content: center; font-size: 16px; color: #d5cfc8;
+        box-shadow: 0 1px 4px rgba(0,0,0,.3);
       }
-      .sidebar-toggle-float:hover { background: #f5f3ef; }
+      .sidebar-toggle-float:hover { background: rgba(138, 43, 226, 0.2); }
       .sidebar.collapsed ~ .chat-column .sidebar-toggle-float { display: flex; }
 
       /* ── chat column ── */
@@ -132,48 +155,98 @@
         display: flex; align-items: center; justify-content: center;
         font-size: 14px; font-weight: 600;
       }
-      .msg.user .msg-avatar { background: #1c1c1c; color: #fff; }
-      .msg.assistant .msg-avatar { background: #e8e5df; color: #555; }
+      .msg.user .msg-avatar { background: #8a2be2; color: #fff; }
+      .msg.assistant .msg-avatar { background: rgba(45, 27, 105, 0.5); color: #e6dfd8; }
 
       .msg-body {
         padding: 10px 14px; border-radius: 16px; line-height: 1.55;
-        font-size: 14px; white-space: pre-wrap; word-break: break-word;
+        font-size: 14px; word-break: break-word;
       }
+
+      /* ── rendered markdown inside bubbles ── */
+      .msg-body p { margin: 0 0 .6em; }
+      .msg-body p:last-child { margin-bottom: 0; }
+      .msg-body ul, .msg-body ol { margin: .4em 0; padding-left: 1.5em; }
+      .msg-body li { margin-bottom: .25em; }
+      .msg-body h1, .msg-body h2, .msg-body h3,
+      .msg-body h4, .msg-body h5, .msg-body h6 {
+        margin: .8em 0 .4em; line-height: 1.3;
+      }
+      .msg-body h1 { font-size: 1.3em; } .msg-body h2 { font-size: 1.15em; }
+      .msg-body h3 { font-size: 1.05em; }
+      .msg-body code {
+        background: rgba(138, 43, 226, 0.15); padding: 1px 5px; border-radius: 4px;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.9em;
+      }
+      .msg-body pre {
+        background: rgba(13, 13, 21, 0.7); border: 1px solid rgba(138, 43, 226, 0.15);
+        border-radius: 8px; padding: 10px 12px; overflow-x: auto; margin: .6em 0;
+      }
+      .msg-body pre code { background: none; padding: 0; font-size: 0.88em; }
+
+      /* highlight.js overrides */
+      .msg-body pre code.hljs { background: transparent; padding: 0; }
+      .msg-body pre.hljs-pre {
+        background: rgba(13, 13, 21, 0.85); border: 1px solid rgba(138, 43, 226, 0.15);
+        border-radius: 8px; padding: 10px 12px; overflow-x: auto; margin: .6em 0;
+      }
+      .msg-body .code-block-wrapper { position: relative; }
+      .msg-body .code-block-wrapper[data-lang]::before {
+        content: attr(data-lang);
+        position: absolute; top: 0; right: 0;
+        padding: 2px 10px; font-size: 11px; color: #9e8fc1;
+        background: rgba(45, 27, 105, 0.3); border-radius: 0 8px 0 6px;
+        text-transform: uppercase; letter-spacing: .5px; pointer-events: none;
+      }
+      .msg-body blockquote {
+        border-left: 3px solid #8a2be2; margin: .6em 0; padding: .2em 0 .2em .8em;
+        color: #d5cfc8;
+      }
+      .msg-body table { border-collapse: collapse; margin: .6em 0; width: 100%; font-size: 0.92em; }
+      .msg-body th, .msg-body td {
+        border: 1px solid rgba(138, 43, 226, 0.2); padding: 4px 8px; text-align: left;
+      }
+      .msg-body th { background: rgba(45, 27, 105, 0.25); font-weight: 600; }
+      .msg-body hr { border: none; border-top: 1px solid rgba(138, 43, 226, 0.2); margin: .8em 0; }
+      .msg-body a { color: #c77dff; text-decoration: underline; }
+      .msg-body .katex-display { margin: .6em 0; overflow-x: auto; }
+      .msg-body img { max-width: 100%; border-radius: 6px; }
       .msg.user .msg-body {
-        background: #1c1c1c; color: #fff; border-bottom-right-radius: 4px;
+        background: #2d1b69; color: #e6dfd8; border-bottom-right-radius: 4px;
       }
       .msg.assistant .msg-body {
-        background: #fff; border: 1px solid #e0ddd7; border-bottom-left-radius: 4px;
+        background: rgba(45, 27, 105, 0.2); border: 1px solid rgba(138, 43, 226, 0.15); color: #e6dfd8; border-bottom-left-radius: 4px;
       }
 
       /* feedback checkbox beneath assistant messages */
       .msg-footer { display: flex; gap: 6px; margin-top: 6px; }
       .fb-check {
         display: inline-flex; align-items: center; gap: 5px;
-        cursor: pointer; font-size: 12px; color: #888;
+        cursor: pointer; font-size: 12px; color: #9e8fc1;
         background: none; border: none; padding: 0; font-family: inherit;
       }
-      .fb-check:hover { color: #555; }
+      .fb-check:hover { color: #c77dff; }
       .fb-check .cb-box {
         width: 15px; height: 15px; border-radius: 3px;
-        border: 1.5px solid #bbb; display: flex;
+        border: 1.5px solid rgba(138, 43, 226, 0.4); display: flex;
         align-items: center; justify-content: center;
         transition: all .15s ease; flex-shrink: 0;
       }
-      .fb-check:hover .cb-box { border-color: #888; }
-      .fb-check.done { color: #1a7431; cursor: default; }
+      .fb-check:hover .cb-box { border-color: #8a2be2; }
+      .fb-check.done { color: #8a2be2; cursor: default; }
       .fb-check.done .cb-box {
-        background: #1a7431; border-color: #1a7431;
+        background: #8a2be2; border-color: #8a2be2;
       }
       .fb-check.done .cb-box svg { display: block; }
       .fb-check .cb-box svg { display: none; fill: #fff; width: 11px; height: 11px; }
-      .fb-check.highlight .cb-box { border-color: #d4a017; box-shadow: 0 0 0 2px rgba(212,160,23,.25); }
+      .fb-check.highlight .cb-box { border-color: #ff643c; box-shadow: 0 0 0 2px rgba(255, 100, 60, 0.3); }
 
       /* typing indicator */
       .typing-indicator { display: flex; gap: 4px; padding: 8px 14px; }
       .typing-indicator span {
         width: 7px; height: 7px; border-radius: 50%;
-        background: #aaa; animation: blink 1.4s infinite both;
+        background: #8a2be2; animation: blink 1.4s infinite both;
       }
       .typing-indicator span:nth-child(2) { animation-delay: .2s; }
       .typing-indicator span:nth-child(3) { animation-delay: .4s; }
@@ -189,7 +262,7 @@
 
       /* ── input bar ── */
       .input-bar {
-        flex-shrink: 0; border-top: 1px solid #ddd; background: #fff;
+        flex-shrink: 0; border-top: 1px solid rgba(138, 43, 226, 0.15); background: rgba(13, 13, 21, 0.95);
         padding: 12px 20px;
       }
       .input-wrap {
@@ -197,47 +270,57 @@
         align-items: flex-end;
       }
       .input-wrap textarea {
-        flex: 1; resize: none; border: 1px solid #d4d0ca; border-radius: 12px;
+        flex: 1; resize: none; border: 1px solid rgba(138, 43, 226, 0.25); border-radius: 12px;
         padding: 10px 14px; font-size: 14px; font-family: inherit;
         line-height: 1.45; min-height: 44px; max-height: 160px;
         outline: none; transition: border-color .15s;
+        background: rgba(13, 13, 21, 0.6); color: #e6dfd8;
       }
-      .input-wrap textarea:focus { border-color: #1c1c1c; }
+      .input-wrap textarea::placeholder { color: #9e8fc1; }
+      .input-wrap textarea:focus { border-color: #8a2be2; }
       .send-btn {
         width: 40px; height: 40px; border-radius: 50%;
-        border: none; background: #1c1c1c; color: #fff;
+        border: none; background: #8a2be2; color: #fff;
         cursor: pointer; display: flex; align-items: center;
         justify-content: center; flex-shrink: 0;
+        transition: background .15s;
       }
+      .send-btn:hover { background: #7b25cc; }
       .send-btn:disabled { opacity: .4; cursor: not-allowed; }
       .send-btn svg { fill: #fff; width: 18px; height: 18px; }
 
       /* ── feedback modal ── */
       .modal-overlay {
         display: none; position: fixed; inset: 0;
-        background: rgba(0,0,0,.35); z-index: 100;
+        background: rgba(13, 13, 21, 0.7); z-index: 100;
         align-items: center; justify-content: center;
       }
       .modal-overlay.open { display: flex; }
       .modal {
-        background: #fff; border-radius: 12px; padding: 24px;
-        width: 420px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,.18);
+        background: #0d0d15; border: 1px solid rgba(138, 43, 226, 0.2); border-radius: 12px; padding: 24px;
+        width: 420px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,.5);
+        color: #e6dfd8;
       }
-      .modal h2 { font-size: 16px; margin-bottom: 14px; }
-      .modal label { display: block; font-size: 13px; margin: 10px 0 4px; font-weight: 500; }
+      .modal h2 { font-size: 16px; margin-bottom: 14px; color: #e6dfd8; }
+      .modal label { display: block; font-size: 13px; margin: 10px 0 4px; font-weight: 500; color: #d5cfc8; }
       .modal input, .modal textarea {
-        width: 100%; padding: 8px 10px; border: 1px solid #d4d0ca;
+        width: 100%; padding: 8px 10px; border: 1px solid rgba(138, 43, 226, 0.25);
         border-radius: 6px; font-size: 13px; font-family: inherit;
+        background: rgba(45, 27, 105, 0.15); color: #e6dfd8;
       }
+      .modal input:focus, .modal textarea:focus { outline: none; border-color: #8a2be2; }
       .modal textarea { min-height: 60px; resize: vertical; }
       .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
       .modal-actions button {
         padding: 8px 16px; border-radius: 6px; font-size: 13px;
-        cursor: pointer; border: 1px solid #ccc; background: #fff; font-family: inherit;
+        cursor: pointer; border: 1px solid rgba(138, 43, 226, 0.3); background: rgba(45, 27, 105, 0.2); color: #e6dfd8; font-family: inherit;
+        transition: background .15s;
       }
+      .modal-actions button:hover { background: rgba(138, 43, 226, 0.2); }
       .modal-actions .primary {
-        background: #1c1c1c; color: #fff; border-color: #1c1c1c;
+        background: #8a2be2; color: #fff; border-color: #8a2be2;
       }
+      .modal-actions .primary:hover { background: #7b25cc; }
       .rating-row { display: flex; gap: 10px; }
       .rating-row > div { flex: 1; }
 
@@ -245,16 +328,30 @@
       .empty-state {
         flex: 1; display: flex; flex-direction: column;
         align-items: center; justify-content: center;
-        color: #999; text-align: center; padding: 60px 20px;
+        color: #9e8fc1; text-align: center; padding: 60px 20px;
       }
-      .empty-state h2 { font-size: 22px; font-weight: 600; color: #666; margin-bottom: 6px; }
-      .empty-state p { font-size: 14px; }
+      .empty-state h2 { font-size: 22px; font-weight: 600; color: #e6dfd8; margin-bottom: 6px; }
+      .empty-state p { font-size: 14px; color: #9e8fc1; }
     </style>
   </head>
   <body>
     <!-- Header -->
     <div class="header">
-      <h1>Adaptive Tutor</h1>
+      <div class="header-left">
+        <svg width="120" height="35" viewBox="0 0 140 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M23.8829 20.8735C23.8812 20.473 23.783 20.0726 23.5902 19.7086L14.2434 2.08352C13.3027 0.309721 10.7644 0.299297 9.80978 2.06615L6.86503 7.51698C5.90516 9.29339 6.25784 11.4902 7.71892 12.8827C7.73716 12.9001 7.75541 12.9174 7.77452 12.9357C8.16541 13.3066 8.7839 13.2875 9.15047 12.8922L11.376 10.4904C11.5506 10.3019 11.8546 10.5017 11.7512 10.7371L10.3266 13.9659C10.1529 14.3594 10.2597 14.8198 10.589 15.0969L14.6126 18.4777C14.8193 18.6514 14.6056 18.9763 14.3642 18.8556L9.66385 16.5041C9.27903 16.3122 8.8143 16.3964 8.52156 16.7117L6.1232 19.3003C5.9486 19.4888 5.64457 19.289 5.74794 19.0536L7.15777 15.8587C7.32803 15.4722 7.229 15.0187 6.90933 14.7407C6.89804 14.7312 6.88762 14.7216 6.87632 14.7121C5.51861 13.5272 3.41385 13.9051 2.55735 15.4904L0.302315 19.6669C0.0990492 20.043 -0.00171523 20.4591 2.20845e-05 20.8743C0.0017594 21.2748 0.0999178 21.6752 0.29276 22.0392L9.63866 39.6634C10.5794 41.4372 13.1176 41.4477 14.0723 39.6808L17.017 34.23C17.9769 32.4536 17.6242 30.2567 16.1632 28.8643C16.1449 28.8469 16.1267 28.8295 16.1076 28.8113C15.7167 28.4404 15.0982 28.4595 14.7316 28.8547L12.5061 31.2566C12.3315 31.4451 12.0275 31.2453 12.1308 31.0099L13.5554 27.7811C13.7292 27.3875 13.6223 26.9272 13.2931 26.6501L9.26948 23.2692C9.06274 23.0955 9.27643 22.7706 9.51791 22.8914L14.2182 25.2428C14.603 25.4348 15.0678 25.3505 15.3605 25.0352L17.7589 22.4466C17.9335 22.2581 18.2375 22.4579 18.1341 22.6933L16.7243 25.8882C16.5541 26.2748 16.6531 26.7282 16.9727 27.0062C16.984 27.0158 16.9945 27.0253 17.0058 27.0349C18.3635 28.2197 20.4682 27.8419 21.3247 26.2566L23.5815 22.08C23.7848 21.7039 23.8855 21.2878 23.8838 20.8726L23.8829 20.8735Z" fill="#E6DFD8"/>
+          <path d="M44.5647 30.6285V20.7614C44.5647 19.3715 43.6613 18.0164 41.5765 18.0164C39.4918 18.0164 38.4146 19.3368 38.4146 20.7961V30.6285H34.3154V14.8901H38.068V16.9749H38.1028C38.763 15.446 40.2918 14.4731 42.9317 14.4731C46.4063 14.4731 48.6987 16.5232 48.6987 19.9275V30.6285H44.5647Z" fill="#E6DFD8"/>
+          <path d="M57.3848 30.7326C54.0492 30.7326 52.3127 28.3351 52.3127 25.2783V5.8916H56.4119V24.9656C56.4119 26.286 57.0374 27.1199 58.184 27.2589L57.3848 30.7335V30.7326Z" fill="#E6DFD8"/>
+          <path d="M60.9624 30.6285V14.8901H65.132V30.6285H60.9624Z" fill="#E6DFD8"/>
+          <path d="M78.9236 18.364H74.06V25.1735C74.06 26.8065 74.8939 27.3972 76.4228 27.3972C76.9092 27.3972 77.3262 27.3277 77.7779 27.1887L77.4304 30.4896C76.9787 30.6981 76.2143 30.8371 75.3804 30.8371C72.1837 30.8371 69.9608 29.065 69.9608 25.9735V18.3649H67.4243V14.8903H69.9608V11.6241L74.06 9.85205V14.8894H79.688L78.9236 18.364Z" fill="#E6DFD8"/>
+          <path d="M80.3129 22.742C80.3129 17.4962 84.3087 14.4385 88.3384 14.4385C92.7156 14.4385 95.2868 17.4267 95.2868 20.6572C95.2868 21.2479 95.2521 21.6996 95.1478 22.1166L93.202 23.8191H84.3078C84.7248 26.0081 86.5316 27.7107 89.6232 27.7107C91.6037 27.7107 93.0631 27.1895 94.1741 26.4946L93.7571 30.1082C92.6105 30.6989 91.1164 31.0811 88.9977 31.0811C84.2384 31.0811 80.312 27.7455 80.312 22.7429L80.3129 22.742ZM84.4824 20.9004H91.2919C91.3266 20.7614 91.3266 20.6225 91.3266 20.4835C91.3266 19.1284 90.18 17.6343 88.4079 17.6343C86.9833 17.6343 85.1418 18.5377 84.4816 20.9004H84.4824Z" fill="#E6DFD8"/>
+          <path d="M108.314 30.6285V20.7614C108.314 19.3715 107.411 18.0164 105.326 18.0164C103.242 18.0164 102.164 19.3368 102.164 20.7961V30.6285H98.0652V14.8901H101.818V16.9749H101.853C102.513 15.446 104.042 14.4731 106.681 14.4731C110.156 14.4731 112.448 16.5232 112.448 19.9275V30.6285H108.314Z" fill="#E6DFD8"/>
+          <path d="M123.949 8.1499H124.991L134.267 30.6282H131.349L128.917 24.6527H119.953L117.486 30.6282H114.671L123.948 8.1499H123.949ZM120.891 22.3594H127.978L125.477 16.2449C125.094 15.3763 124.782 14.2644 124.469 13.1873H124.399C124.087 14.2644 123.739 15.3763 123.392 16.2449L120.89 22.3594H120.891Z" fill="#E6DFD8"/>
+          <path d="M138.263 13.1181C137.707 13.1181 136.56 11.9715 136.56 11.4155C136.56 10.8249 137.707 9.67822 138.263 9.67822C138.853 9.67822 140 10.8249 140 11.4155C140 11.9715 138.853 13.1181 138.263 13.1181ZM136.908 30.6285V14.8902H139.652V30.6285H136.908Z" fill="#E6DFD8"/>
+          <path d="M65.0747 9.60246L63.4477 12.6141C63.2688 12.9451 62.7928 12.9433 62.6164 12.6106L61.0172 9.59464C60.9434 9.45566 60.9443 9.28801 61.019 9.14989L62.646 6.13825C62.8249 5.80729 63.3009 5.80903 63.4773 6.14173L65.0765 9.15771C65.1503 9.29669 65.1495 9.46434 65.0747 9.60246Z" fill="#E6DFD8"/>
+        </svg>
+        <h1>Adaptive Tutor</h1>
+      </div>
       <div class="header-actions">
         <form method="post" action="{% url 'logout' %}" style="margin:0;">
           {% csrf_token %}
@@ -266,9 +363,9 @@
     <!-- Settings bar -->
     <div class="settings-bar">
       <label for="user-id">User ID</label>
-      <input id="user-id" value="user-123" />
+      <input id="user-id" value="{{ user_id }}" readonly title="Your unique user ID (read-only)" />
       <label for="conversation-id">Conversation</label>
-      <input id="conversation-id" placeholder="auto-assigned" />
+      <input id="conversation-id" placeholder="auto-assigned" readonly title="Conversation ID (read-only)" />
       <button class="new-chat-btn" id="new-chat-btn" type="button">+ New Chat</button>
     </div>
 
@@ -368,6 +465,97 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
 
+      /* ── Markdown + highlight.js + KaTeX rendering ── */
+
+      const md = window.markdownit({
+        html: false,
+        linkify: true,
+        typographer: true,
+        breaks: true,
+        highlight: function (str, lang) {
+          if (lang && hljs.getLanguage(lang)) {
+            try {
+              return '<pre class="hljs-pre"><code class="hljs">' +
+                hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+                '</code></pre>';
+            } catch (_) {}
+          }
+          return '<pre class="hljs-pre"><code class="hljs">' +
+            md.utils.escapeHtml(str) + '</code></pre>';
+        },
+      });
+
+      // Override fence renderer to wrap highlighted blocks with a language label
+      const defaultFence = md.renderer.rules.fence;
+      md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+        const token = tokens[idx];
+        const lang = (token.info || '').trim().split(/\s+/)[0];
+        const rendered = defaultFence
+          ? defaultFence(tokens, idx, options, env, self)
+          : self.renderToken(tokens, idx, options);
+        if (lang) {
+          return '<div class="code-block-wrapper" data-lang="'
+            + md.utils.escapeHtml(lang) + '">' + rendered + '</div>';
+        }
+        return rendered;
+      };
+
+      /**
+       * Protect math delimiters from markdown-it.
+       * Extracts $$…$$, $…$, \[…\], \(…\) into placeholders,
+       * runs markdown-it, then restores the original math source.
+       */
+      function renderMarkdownLatex(text) {
+        const mathBlocks = [];
+        // Can't use  \x00 (null char) as placeholder because markdown-it removes it, so use a unique string instead
+        const placeholder = (i) => '{MATH' + i + '}';
+
+        // Order matters: match display ($$, \[) before inline ($, \()
+        let processed = text
+          // $$…$$ (display, may span lines)
+          .replace(/\$\$([\s\S]+?)\$\$/g, (m) => {
+            mathBlocks.push(m);
+            return placeholder(mathBlocks.length - 1);
+          })
+          // \[…\] (display)
+          .replace(/\\\[([\s\S]+?)\\\]/g, (m) => {
+            mathBlocks.push(m);
+            return placeholder(mathBlocks.length - 1);
+          })
+          // $…$ (inline, no newlines)
+          .replace(/\$([^\$\n]+?)\$/g, (m) => {
+            mathBlocks.push(m);
+            return placeholder(mathBlocks.length - 1);
+          })
+          // \(…\) (inline)
+          .replace(/\\\((.+?)\\\)/g, (m) => {
+            mathBlocks.push(m);
+            return placeholder(mathBlocks.length - 1);
+          });
+
+        let html = md.render(processed);
+
+        // Restore math source text inside the HTML
+        for (let i = 0; i < mathBlocks.length; i++) {
+          html = html.replace(placeholder(i), mathBlocks[i]);
+          console.log("Restoring math block:", mathBlocks[i] + " at placeholder: " + placeholder(i));
+        }
+        return html;
+      }
+
+      function applyKatex(el) {
+        if (typeof renderMathInElement !== "function") return;
+        renderMathInElement(el, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+            { left: "\\[", right: "\\]", display: true },
+            { left: "\\(", right: "\\)", display: false },
+          ],
+          throwOnError: false,
+        });
+      }
+
       function hideEmpty() {
         if (emptyState) emptyState.style.display = "none";
       }
@@ -385,7 +573,12 @@
 
         const body = document.createElement("div");
         body.className = "msg-body";
-        body.textContent = text;
+        if (role === "user") {
+          body.textContent = text;
+        } else {
+          body.innerHTML = renderMarkdownLatex(text);
+          applyKatex(body);
+        }
 
         wrap.appendChild(avatar);
 
@@ -525,25 +718,6 @@
         questionInput.focus();
       });
 
-      /* ── load history when conversation id changes ── */
-      convIdInput.addEventListener("change", async () => {
-        const cid = convIdInput.value.trim();
-        const uid = userIdInput.value.trim();
-        if (!cid || !uid) return;
-        chatMessages.innerHTML = "";
-        try {
-          const resp = await fetch(`/api/conversations/${cid}/history?user_id=${encodeURIComponent(uid)}`);
-          if (!resp.ok) return;
-          const payload = await resp.json();
-          if (payload.turns && payload.turns.length) {
-            for (const t of payload.turns) {
-              addMessage("user", t.user_text);
-              addMessage("assistant", t.assistant_text, t.turn_id, t.turn_index, t.has_feedback);
-            }
-          }
-        } catch (e) { console.warn("Could not load history:", e); }
-      });
-
       /* ── sidebar toggle ── */
       sidebarCollapse.addEventListener("click", () => {
         sidebar.classList.add("collapsed");
@@ -622,8 +796,7 @@
       // We patch via an event-driven approach instead:
       // (already wired inline – see the fetch success path)
 
-      // Load conversations on page load and when user_id changes
-      userIdInput.addEventListener("change", loadConversationList);
+      // Load conversations on page load
       loadConversationList();
 
       /* ── feedback modal ── */

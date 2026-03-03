@@ -460,7 +460,10 @@ class PromptLifecycleView(APIView):
 
 @login_required
 def app_view(request):
-    return render(request, 'app/index.html')
+    context = {
+        'user_id': f'user-{request.user.pk}',
+    }
+    return render(request, 'app/index.html', context)
 
 
 def ninja_panel_view(request):
