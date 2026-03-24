@@ -3,20 +3,21 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from apps.history_service.models import Turn
-from apps.ratings_service.models import Evaluator, TurnEvaluation
+from apps.ratings_service.models import Evaluator, TurnEvaluation, TurnFeedback
 
 
 @dataclass(frozen=True)
 class EvaluationRewardPayload:
     evaluator_name: str
     q_total: float
-    q_correctness: float
-    q_helpfulness: float
-    q_pedagogy: float
+    q_progress: float
+    q_confusion_reduction: float
+    q_clarity: float
+    q_engagement: float
 
 
 class EvaluationService:
-    DEFAULT_EVALUATOR_NAME = 'qscore_v0'
+    DEFAULT_EVALUATOR_NAME = 'qscore_v2'
 
     def __init__(self, evaluator_name: str | None = None):
         self.evaluator_name = evaluator_name or self.DEFAULT_EVALUATOR_NAME
@@ -32,30 +33,59 @@ class EvaluationService:
 
         config = evaluator.config_json or {}
         rating_scale = config.get('rating_scale', {'min': 1, 'max': 5})
-        weights = config.get('weights', {'wc': 0.4, 'wh': 0.4, 'wp': 0.2})
+        weights = config.get(
+            'weights',
+            {
+                'w_progress': 0.4737,
+                'w_confusion_reduction': 0.2632,
+                'w_clarity': 0.1579,
+                'w_engagement': 0.1053,
+            },
+        )
 
-        latest_feedback = turn.feedback_entries.order_by('-created_at').first()
+        latest_feedback = turn.feedback_entries.order_by('-created_at', '-id').first()
         if not latest_feedback:
             return None
 
-        c = self._normalize(latest_feedback.rating_correctness, rating_scale)
-        h = self._normalize(latest_feedback.rating_helpfulness, rating_scale)
-        p = self._pedagogy_score(turn, config)
+        progress_current = self._normalize(latest_feedback.rating_perceived_progress, rating_scale)
+        clarity_current = self._normalize(latest_feedback.rating_clarity_understanding, rating_scale)
+        engagement_current = self._normalize(latest_feedback.rating_engagement_fit, rating_scale)
+
+        previous_feedback = (
+            TurnFeedback.objects.filter(
+                turn__conversation_id=turn.conversation_id,
+                user_id=latest_feedback.user_id,
+                id__lt=latest_feedback.id,
+            )
+            .order_by('-created_at', '-id')
+            .first()
+        )
+        if previous_feedback is None:
+            progress = 0.5
+            confusion_reduction = 0.5
+        else:
+            prev_progress = self._normalize(previous_feedback.rating_perceived_progress, rating_scale)
+            prev_clarity = self._normalize(previous_feedback.rating_clarity_understanding, rating_scale)
+            progress = self._delta_to_score(progress_current - prev_progress)
+            confusion_reduction = self._delta_to_score(clarity_current - prev_clarity)
 
         q_total = (
-            weights.get('wc', 0.0) * c
-            + weights.get('wh', 0.0) * h
-            + weights.get('wp', 0.0) * p
+            weights.get('w_progress', 0.0) * progress
+            + weights.get('w_confusion_reduction', 0.0) * confusion_reduction
+            + weights.get('w_clarity', 0.0) * clarity_current
+            + weights.get('w_engagement', 0.0) * engagement_current
         )
+        q_total = max(0.0, min(1.0, q_total))
 
         evaluation, _ = TurnEvaluation.objects.update_or_create(
             turn=turn,
             evaluator=evaluator,
             defaults={
                 'q_total': q_total,
-                'q_correctness': c,
-                'q_helpfulness': h,
-                'q_pedagogy': p,
+                'q_progress': progress,
+                'q_confusion_reduction': confusion_reduction,
+                'q_clarity': clarity_current,
+                'q_engagement': engagement_current,
             },
         )
         return evaluation
@@ -67,9 +97,10 @@ class EvaluationService:
         return evaluation, EvaluationRewardPayload(
             evaluator_name=evaluation.evaluator.name,
             q_total=float(evaluation.q_total),
-            q_correctness=float(evaluation.q_correctness),
-            q_helpfulness=float(evaluation.q_helpfulness),
-            q_pedagogy=float(evaluation.q_pedagogy),
+            q_progress=float(evaluation.q_progress),
+            q_confusion_reduction=float(evaluation.q_confusion_reduction),
+            q_clarity=float(evaluation.q_clarity),
+            q_engagement=float(evaluation.q_engagement),
         )
 
     def _normalize(self, rating: int, rating_scale: dict) -> float:
@@ -80,15 +111,5 @@ class EvaluationService:
         normalized = (float(rating) - min_r) / (max_r - min_r)
         return max(0.0, min(1.0, normalized))
 
-    def _pedagogy_score(self, turn: Turn, config: dict) -> float:
-        guardrail_key = config.get('guardrail_tag', 'guardrails')
-        prompt = getattr(turn, 'prompt', None)
-        if not prompt:
-            return 0.0
-        tags = prompt.policy_tags_json or {}
-        guardrails = tags.get(guardrail_key)
-        if isinstance(guardrails, (list, tuple, dict)) and len(guardrails) > 0:
-            return 1.0
-        if isinstance(guardrails, str) and guardrails.strip():
-            return 1.0
-        return 0.0
+    def _delta_to_score(self, delta: float) -> float:
+        return max(0.0, min(1.0, 0.5 + (0.5 * float(delta))))

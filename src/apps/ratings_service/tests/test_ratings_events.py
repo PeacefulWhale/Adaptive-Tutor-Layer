@@ -33,12 +33,16 @@ class RatingsEventsTests(TestCase):
             model_version='pts_normal_v1',
         )
         Evaluator.objects.create(
-            name='qscore_v0',
-            version='0.1.0',
+            name='qscore_v2',
+            version='2.0.0',
             config_json={
-                'weights': {'wc': 0.4, 'wh': 0.4, 'wp': 0.2},
+                'weights': {
+                    'w_progress': 0.4737,
+                    'w_confusion_reduction': 0.2632,
+                    'w_clarity': 0.1579,
+                    'w_engagement': 0.1053,
+                },
                 'rating_scale': {'min': 1, 'max': 5},
-                'guardrail_tag': 'guardrails',
             },
         )
 
@@ -47,9 +51,9 @@ class RatingsEventsTests(TestCase):
             feedback, evaluation = service.record_feedback_and_evaluate(
                 turn_id=str(turn.id),
                 user_id='learner-1',
-                rating_correctness=5,
-                rating_helpfulness=4,
-                rating_clarity=4,
+                rating_perceived_progress=5,
+                rating_clarity_understanding=4,
+                rating_engagement_fit=4,
                 free_text='helpful',
                 trace_id='trace-1',
             )

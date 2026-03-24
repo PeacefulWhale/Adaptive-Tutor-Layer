@@ -30,9 +30,9 @@ class EmbeddingServiceTests(TestCase):
         feedback = TurnFeedback.objects.create(
             turn=turn,
             user_id='learner-1',
-            rating_correctness=5,
-            rating_helpfulness=4,
-            rating_clarity=4,
+            rating_perceived_progress=5,
+            rating_clarity_understanding=4,
+            rating_engagement_fit=4,
             free_text='Helpful answer',
         )
 

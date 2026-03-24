@@ -43,8 +43,9 @@ class EmbeddingService:
         free_text = (feedback.free_text or '').strip()
         if not free_text:
             free_text = (
-                f"ratings correctness={feedback.rating_correctness} "
-                f"helpfulness={feedback.rating_helpfulness} clarity={feedback.rating_clarity}"
+                f"ratings perceived_progress={feedback.rating_perceived_progress} "
+                f"clarity_understanding={feedback.rating_clarity_understanding} "
+                f"engagement_fit={feedback.rating_engagement_fit}"
             )
 
         doc = self._build_feedback_doc(feedback, free_text)

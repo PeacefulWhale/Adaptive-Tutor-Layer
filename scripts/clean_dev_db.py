@@ -4,7 +4,7 @@
 Default behavior:
 - Keep default prompts (manual + active + parent_prompt is null; fallback to active prompts).
 - Keep all Django users.
-- Keep default evaluator `qscore_v0`.
+- Keep default evaluator `qscore_v2`.
 - Delete runtime data: conversations, turns, feedback/evals, bandit state/decisions,
   embeddings/sync jobs, drift runs/signals, GA runs/candidates, and non-kept prompts.
 """
@@ -46,7 +46,8 @@ except ModuleNotFoundError as exc:
 django.setup()
 
 from django.contrib.auth import get_user_model  # noqa: E402
-from django.db import transaction  # noqa: E402
+from django.db import connection, transaction  # noqa: E402
+from django.db.utils import OperationalError, ProgrammingError  # noqa: E402
 from django.db.models import Q  # noqa: E402
 
 from apps.drift_detection_service.models import DriftRun, DriftSignal  # noqa: E402
@@ -72,7 +73,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--drop-evaluators",
         action="store_true",
-        help="Delete all Evaluator rows (default keeps qscore_v0).",
+        help="Delete all Evaluator rows (default keeps qscore_v2).",
     )
     parser.add_argument(
         "--keep-prompt-id",
@@ -182,8 +183,8 @@ def run_cleanup(args: argparse.Namespace, keep_prompt_ids: set[int]) -> None:
         TurnEmbeddingIndex.objects.all().delete()
         PromptDecision.objects.all().delete()
         BanditUserArmState.objects.all().delete()
-        TurnFeedback.objects.all().delete()
-        TurnEvaluation.objects.all().delete()
+        _safe_delete_rows(TurnFeedback)
+        _safe_delete_rows(TurnEvaluation)
         Turn.objects.all().delete()
         Conversation.objects.all().delete()
 
@@ -194,11 +195,19 @@ def run_cleanup(args: argparse.Namespace, keep_prompt_ids: set[int]) -> None:
         if args.drop_evaluators:
             Evaluator.objects.all().delete()
         else:
-            Evaluator.objects.exclude(name='qscore_v0').delete()
+            Evaluator.objects.exclude(name='qscore_v2').delete()
 
         # Users
         if args.drop_users:
             User.objects.all().delete()
+
+
+def _safe_delete_rows(model) -> None:
+    try:
+        model.objects.all().delete()
+    except (OperationalError, ProgrammingError):
+        with connection.cursor() as cursor:
+            cursor.execute(f'DELETE FROM "{model._meta.db_table}"')
 
 
 def _candidate_chroma_urls(args: argparse.Namespace) -> list[str]:

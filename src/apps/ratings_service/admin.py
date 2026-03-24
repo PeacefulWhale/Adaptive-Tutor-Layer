@@ -8,12 +8,12 @@ class TurnFeedbackAdmin(admin.ModelAdmin):
     list_display = (
         'turn',
         'user_id',
-        'rating_correctness',
-        'rating_helpfulness',
-        'rating_clarity',
+        'rating_perceived_progress',
+        'rating_clarity_understanding',
+        'rating_engagement_fit',
         'created_at',
     )
-    list_filter = ('rating_correctness', 'rating_helpfulness', 'rating_clarity')
+    list_filter = ('rating_perceived_progress', 'rating_clarity_understanding', 'rating_engagement_fit')
     search_fields = ('turn__id', 'user_id', 'free_text')
 
 

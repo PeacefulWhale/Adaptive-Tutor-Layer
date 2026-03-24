@@ -9,7 +9,7 @@ class TutorRespondRequestSerializer(serializers.Serializer):
 
 class TurnFeedbackRequestSerializer(serializers.Serializer):
     user_id = serializers.CharField()
-    rating_correctness = serializers.IntegerField(min_value=1, max_value=5)
-    rating_helpfulness = serializers.IntegerField(min_value=1, max_value=5)
-    rating_clarity = serializers.IntegerField(min_value=1, max_value=5)
+    rating_perceived_progress = serializers.IntegerField(min_value=1, max_value=5)
+    rating_clarity_understanding = serializers.IntegerField(min_value=1, max_value=5)
+    rating_engagement_fit = serializers.IntegerField(min_value=1, max_value=5)
     free_text = serializers.CharField(required=False, allow_blank=True, allow_null=True)

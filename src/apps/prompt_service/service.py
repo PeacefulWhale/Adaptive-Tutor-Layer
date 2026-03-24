@@ -284,7 +284,7 @@ class PromptService:
             applied_reward = self._apply_reward(decision.learner_id, decision.prompt, evaluation_q)
             decision.reward = applied_reward
             decision.reward_computed_at = timezone.now()
-            decision.reward_version = 'mean_q_v0'
+            decision.reward_version = 'q_v2'
             decision.save(update_fields=['reward', 'reward_computed_at', 'reward_version'])
             updated += 1
         return updated
@@ -320,7 +320,7 @@ class PromptService:
             )
             decision.reward = applied_reward
             decision.reward_computed_at = timezone.now()
-            decision.reward_version = 'mean_q_v0'
+            decision.reward_version = 'q_v2'
             decision.save(update_fields=['reward', 'reward_computed_at', 'reward_version'])
             updates.append(
                 {

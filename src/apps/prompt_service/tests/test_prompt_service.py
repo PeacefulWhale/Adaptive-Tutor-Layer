@@ -152,14 +152,15 @@ class PromptServiceUpdateTests(TestCase):
             assistant_text='a',
             prompt=prompt,
         )
-        evaluator = Evaluator.objects.create(name='qscore_v0', version='0.1.0')
+        evaluator = Evaluator.objects.create(name='qscore_v2', version='2.0.0')
         TurnEvaluation.objects.create(
             turn=turn,
             evaluator=evaluator,
             q_total=0.7,
-            q_correctness=0.7,
-            q_helpfulness=0.7,
-            q_pedagogy=0.7,
+            q_progress=0.7,
+            q_confusion_reduction=0.7,
+            q_clarity=0.7,
+            q_engagement=0.7,
         )
         decision = PromptDecision.objects.create(
             learner_id='learner-1',
@@ -185,5 +186,6 @@ class PromptServiceUpdateTests(TestCase):
         self.assertEqual(first, 1)
         self.assertEqual(second, 0)
         self.assertAlmostEqual(decision.reward, 0.7, places=6)
+        self.assertEqual(decision.reward_version, 'q_v2')
         self.assertAlmostEqual(state.eta, eta_after_first, places=6)
         self.assertAlmostEqual(state.nu, nu_after_first, places=6)

@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.test import TestCase
 
 from apps.drift_detection_service.models import DriftRun
-from apps.drift_detection_service.service import DriftDetectionService, DriftMetric
+from apps.drift_detection_service.service import DriftDetectionService, DriftMetric, _low_ratio
 from apps.prompt_service.models import Prompt
 
 
@@ -68,3 +68,18 @@ class DriftDetectionServiceTests(TestCase):
         self.assertTrue(a2.ga_triggered)
         self.assertEqual(DriftRun.objects.filter(subject_user_id='learner-a', ga_triggered=True).count(), 1)
         self.assertEqual(DriftRun.objects.filter(subject_user_id='learner-b', ga_triggered=True).count(), 0)
+
+    def test_low_ratio_uses_v2_feedback_dimensions(self):
+        rows = [
+            {
+                'rating_perceived_progress': 1,
+                'rating_clarity_understanding': 2,
+                'rating_engagement_fit': 2,
+            },
+            {
+                'rating_perceived_progress': 4,
+                'rating_clarity_understanding': 4,
+                'rating_engagement_fit': 4,
+            },
+        ]
+        self.assertAlmostEqual(_low_ratio(rows), 0.5, places=6)

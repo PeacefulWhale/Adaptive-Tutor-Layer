@@ -515,9 +515,10 @@
             delta_vs_baseline: null,
             reward: null,
             components: {
-              correctness: null,
+              progress: null,
+              confusion_reduction: null,
               clarity: null,
-              pedagogy: null,
+              engagement: null,
             },
             rubric: [],
           },
@@ -783,11 +784,12 @@
               q: payload.q_total ?? prev.qscore.q,
               reward: payload.q_total ?? prev.qscore.reward,
               components: {
-                correctness: payload.q_correctness ?? prev.qscore.components.correctness,
-                clarity: payload.q_helpfulness ?? prev.qscore.components.clarity,
-                pedagogy: payload.q_pedagogy ?? prev.qscore.components.pedagogy,
+                progress: payload.q_progress ?? prev.qscore.components.progress,
+                confusion_reduction: payload.q_confusion_reduction ?? prev.qscore.components.confusion_reduction,
+                clarity: payload.q_clarity ?? prev.qscore.components.clarity,
+                engagement: payload.q_engagement ?? prev.qscore.components.engagement,
               },
-              rubric: ['Correctness', 'Helpfulness', 'Pedagogy'],
+              rubric: ['Progress', 'Confusion Reduction', 'Clarity', 'Engagement'],
             },
           };
         }
@@ -1218,9 +1220,10 @@
                 <div className="badge">Q {snapshot.qscore.q == null ? '—' : Number(snapshot.qscore.q).toFixed(2)}</div>
                 <div className="badge">Reward {snapshot.qscore.reward == null ? '—' : Number(snapshot.qscore.reward).toFixed(2)}</div>
               </div>
-              <Bar label="Correctness" value={c.correctness || 0} color="#67E8F9" suffix={c.correctness == null ? '—' : `${Math.round(c.correctness * 100)}%`} />
+              <Bar label="Progress" value={c.progress || 0} color="#67E8F9" suffix={c.progress == null ? '—' : `${Math.round(c.progress * 100)}%`} />
+              <Bar label="Confusion Reduction" value={c.confusion_reduction || 0} color="#7dd3fc" suffix={c.confusion_reduction == null ? '—' : `${Math.round(c.confusion_reduction * 100)}%`} />
               <Bar label="Clarity" value={c.clarity || 0} color="#7dd3fc" suffix={c.clarity == null ? '—' : `${Math.round(c.clarity * 100)}%`} />
-              <Bar label="Pedagogy" value={c.pedagogy || 0} color="#38bdf8" suffix={c.pedagogy == null ? '—' : `${Math.round(c.pedagogy * 100)}%`} />
+              <Bar label="Engagement" value={c.engagement || 0} color="#38bdf8" suffix={c.engagement == null ? '—' : `${Math.round(c.engagement * 100)}%`} />
             </div>
           );
         }

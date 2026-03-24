@@ -61,7 +61,7 @@ Windowing:
 - previous 30 = baseline
 
 Low-rating ratio:
-- row is low if avg(correctness, helpfulness, clarity) `<= 2.0`
+- row is low if avg(perceived_progress, clarity_understanding, engagement_fit) `<= 2.0`
 - score = `recent_low_ratio - baseline_low_ratio`
 
 Threshold:

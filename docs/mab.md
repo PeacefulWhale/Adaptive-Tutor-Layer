@@ -15,7 +15,7 @@
 
 * `r ∈ [0,1]` = Q-score for the chosen prompt on that turn.
 * If multiple evaluations exist for the same turn:
-  * `r = mean(q_scores)` (v0).
+  * `r = mean(q_scores)` (v2 runtime uses reward version `q_v2`).
 
 ### Core behavior
 
@@ -116,7 +116,7 @@ Create/adjust table: `PromptDecision`
 * `chosen_at`
 * `reward` (nullable, filled after eval join)
 * `reward_computed_at` (nullable)
-* `reward_version` (e.g. `"mean_q_v0"`)
+* `reward_version` (e.g. `"q_v2"`)
 * `model_version` (e.g. `"pts_normal_v1"`)
 
 Drop contextual fields from this design (`context_vector`, `context_version`, etc.).

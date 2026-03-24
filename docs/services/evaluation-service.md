@@ -11,12 +11,22 @@ Separates Q-score evaluation logic from feedback ingestion.
 - Persist/update `TurnEvaluation`.
 
 ## Scoring
-Default weighted score:
-- correctness: 0.4
-- helpfulness: 0.4
-- pedagogy: 0.2
+Default weighted score (`qscore_v2`):
+- progress: 0.4737
+- confusion_reduction: 0.2632
+- clarity: 0.1579
+- engagement: 0.1053
 
-Pedagogy currently uses prompt guardrail tag presence as a heuristic.
+Component details:
+- `q_progress`: delta score from perceived progress vs previous rated turn.
+- `q_confusion_reduction`: delta score from clarity/understanding vs previous rated turn.
+- `q_clarity`: normalized current clarity/understanding rating.
+- `q_engagement`: normalized current engagement-fit rating.
+
+Delta score mapping:
+- `delta = current_norm - previous_norm`
+- `score = clip(0.5 + 0.5 * delta, 0, 1)`
+- first rated turn fallback: `0.5` (neutral)
 
 ## Main Methods
 - `evaluate_turn(turn)`

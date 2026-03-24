@@ -31,9 +31,9 @@ class RatingsService:
         self,
         turn_id: str,
         user_id: str,
-        rating_correctness: int,
-        rating_helpfulness: int,
-        rating_clarity: int,
+        rating_perceived_progress: int,
+        rating_clarity_understanding: int,
+        rating_engagement_fit: int,
         free_text: str | None = None,
         trace_id: str | None = None,
     ) -> tuple[TurnFeedback, TurnEvaluation | None]:
@@ -55,9 +55,9 @@ class RatingsService:
         feedback = TurnFeedback.objects.create(
             turn=turn,
             user_id=user_id,
-            rating_correctness=rating_correctness,
-            rating_helpfulness=rating_helpfulness,
-            rating_clarity=rating_clarity,
+            rating_perceived_progress=rating_perceived_progress,
+            rating_clarity_understanding=rating_clarity_understanding,
+            rating_engagement_fit=rating_engagement_fit,
             free_text=free_text,
         )
         try:
@@ -79,9 +79,9 @@ class RatingsService:
             edge={'from': 'adaptive', 'to': 'qscore'},
             payload={
                 'feedback_id': str(feedback.id),
-                'rating_correctness': feedback.rating_correctness,
-                'rating_helpfulness': feedback.rating_helpfulness,
-                'rating_clarity': feedback.rating_clarity,
+                'rating_perceived_progress': feedback.rating_perceived_progress,
+                'rating_clarity_understanding': feedback.rating_clarity_understanding,
+                'rating_engagement_fit': feedback.rating_engagement_fit,
             },
         )
 
@@ -100,9 +100,10 @@ class RatingsService:
                 payload={
                     'evaluator': evaluation.evaluator.name,
                     'q_total': evaluation.q_total,
-                    'q_correctness': evaluation.q_correctness,
-                    'q_helpfulness': evaluation.q_helpfulness,
-                    'q_pedagogy': evaluation.q_pedagogy,
+                    'q_progress': evaluation.q_progress,
+                    'q_confusion_reduction': evaluation.q_confusion_reduction,
+                    'q_clarity': evaluation.q_clarity,
+                    'q_engagement': evaluation.q_engagement,
                 },
             )
 
