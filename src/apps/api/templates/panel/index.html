@@ -282,7 +282,7 @@
               'Let’s check that: when we backprop through a layer, what happens to the chain rule term for the activation? Is the sign always flipped or do we multiply by the downstream gradient?',
             baseline:
               'Backpropagation uses the chain rule to propagate errors backward through the network so weights can be updated.',
-            breakdown: { delta: '+0.23 vs baseline', correctness: 0.82, clarity: 0.77, pedagogy: 0.76 },
+            breakdown: { delta: '+0.23 vs baseline', progress: 0.82, confusion_reduction: 0.77, clarity: 0.76, engagement: 0.74 },
             flags: ['Check-for-understanding present', 'Avoided giving full solution'],
             prompts: {
               adaptive: 'Socratic Probe v4',
@@ -301,7 +301,7 @@
             q: 0.78,
             delta_vs_baseline: 0.23,
             reward: 0.78,
-            components: { correctness: 0.82, clarity: 0.77, pedagogy: 0.76 },
+            components: { progress: 0.82, confusion_reduction: 0.77, clarity: 0.76, engagement: 0.74 },
             rubric: ['No full solutions', 'Check for understanding', 'Clear, concise'],
           },
         },
@@ -541,9 +541,10 @@
                 <div className="badge">Q {snapshot.qscore.q.toFixed(2)}</div>
                 <div className="badge">Δ {snapshot.qscore.delta_vs_baseline.toFixed(2)}</div>
               </div>
-              <Bar label="Correctness" value={c.correctness} color="#8a2be2" />
+              <Bar label="Progress" value={c.progress} color="#8a2be2" />
+              <Bar label="Confusion Reduction" value={c.confusion_reduction} color="#a855f7" />
               <Bar label="Clarity" value={c.clarity} color="#a855f7" />
-              <Bar label="Pedagogy" value={c.pedagogy} color="#c77dff" />
+              <Bar label="Engagement" value={c.engagement} color="#c77dff" />
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
                 {snapshot.qscore.rubric.map((r) => (
                   <span className="badge" key={r}>{r}</span>

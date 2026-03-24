@@ -15,5 +15,10 @@ Ingests feedback for a turn, triggers evaluation, and applies prompt reward upda
 ## Main Entry
 `record_feedback_and_evaluate(turn_id, user_id, ratings..., free_text, trace_id)`
 
+Ratings payload (`qscore_v2` hard cut):
+- `rating_perceived_progress`
+- `rating_clarity_understanding`
+- `rating_engagement_fit`
+
 ## Outputs
 - `(TurnFeedback, TurnEvaluation | None)`

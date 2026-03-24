@@ -228,9 +228,9 @@ class DriftDetectionService:
             TurnFeedback.objects.filter(user_id=user_id)
             .order_by('-created_at')
             .values(
-                'rating_correctness',
-                'rating_helpfulness',
-                'rating_clarity',
+                'rating_perceived_progress',
+                'rating_clarity_understanding',
+                'rating_engagement_fit',
             )[:total_needed]
         )
         if len(rows) < total_needed:
@@ -338,9 +338,9 @@ def _low_ratio(rows: list[dict]) -> float:
     low = 0
     for row in rows:
         avg = (
-            float(row['rating_correctness'])
-            + float(row['rating_helpfulness'])
-            + float(row['rating_clarity'])
+            float(row['rating_perceived_progress'])
+            + float(row['rating_clarity_understanding'])
+            + float(row['rating_engagement_fit'])
         ) / 3.0
         if avg <= 2.0:
             low += 1

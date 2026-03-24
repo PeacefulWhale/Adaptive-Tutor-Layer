@@ -110,12 +110,16 @@ class RealtimeEventFlowTests(TestCase):
             model_version='pts_normal_v1',
         )
         Evaluator.objects.create(
-            name='qscore_v0',
-            version='0.1.0',
+            name='qscore_v2',
+            version='2.0.0',
             config_json={
-                'weights': {'wc': 0.4, 'wh': 0.4, 'wp': 0.2},
+                'weights': {
+                    'w_progress': 0.4737,
+                    'w_confusion_reduction': 0.2632,
+                    'w_clarity': 0.1579,
+                    'w_engagement': 0.1053,
+                },
                 'rating_scale': {'min': 1, 'max': 5},
-                'guardrail_tag': 'guardrails',
             },
         )
 
@@ -135,9 +139,9 @@ class RealtimeEventFlowTests(TestCase):
                     data=json.dumps(
                         {
                             'user_id': 'learner-1',
-                            'rating_correctness': 5,
-                            'rating_helpfulness': 4,
-                            'rating_clarity': 4,
+                            'rating_perceived_progress': 5,
+                            'rating_clarity_understanding': 4,
+                            'rating_engagement_fit': 4,
                             'free_text': 'helpful',
                         }
                     ),
@@ -157,3 +161,29 @@ class RealtimeEventFlowTests(TestCase):
         self.assertIsNotNone(decision.reward)
         self.assertGreaterEqual(decision.reward, 0.0)
         self.assertLessEqual(decision.reward, 1.0)
+
+    def test_feedback_rejects_legacy_rating_fields(self):
+        prompt = Prompt.objects.create(text='Prompt A', is_active=True)
+        conversation = Conversation.objects.create(user_id='learner-1')
+        turn = Turn.objects.create(
+            conversation=conversation,
+            turn_index=0,
+            user_text='u',
+            assistant_text='a',
+            prompt=prompt,
+        )
+
+        resp = self.client.post(
+            f'/api/turns/{turn.id}/feedback',
+            data=json.dumps(
+                {
+                    'user_id': 'learner-1',
+                    'rating_correctness': 5,
+                    'rating_helpfulness': 4,
+                    'rating_clarity': 4,
+                }
+            ),
+            content_type='application/json',
+        )
+
+        self.assertEqual(resp.status_code, 400)

@@ -297,18 +297,19 @@
       }
       .modal-overlay.open { display: flex; }
       .modal {
-        background: #0d0d15; border: 1px solid rgba(138, 43, 226, 0.2); border-radius: 12px; padding: 24px;
-        width: 420px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,.5);
+        background: #0d0d15; border: 1px solid rgba(138, 43, 226, 0.25); border-radius: 14px; padding: 24px;
+        width: min(760px, 94vw); max-height: min(90vh, 760px); overflow-y: auto;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
         color: #e6dfd8;
       }
-      .modal h2 { font-size: 16px; margin-bottom: 14px; color: #e6dfd8; }
-      .modal label { display: block; font-size: 13px; margin: 10px 0 4px; font-weight: 500; color: #d5cfc8; }
-      .modal input, .modal textarea {
+      .modal h2 { font-size: 18px; margin-bottom: 14px; color: #e6dfd8; }
+      .modal label { display: block; font-size: 13px; margin: 14px 0 6px; font-weight: 600; color: #d5cfc8; }
+      .modal textarea {
         width: 100%; padding: 8px 10px; border: 1px solid rgba(138, 43, 226, 0.25);
         border-radius: 6px; font-size: 13px; font-family: inherit;
         background: rgba(45, 27, 105, 0.15); color: #e6dfd8;
       }
-      .modal input:focus, .modal textarea:focus { outline: none; border-color: #8a2be2; }
+      .modal textarea:focus { outline: none; border-color: #8a2be2; }
       .modal textarea { min-height: 60px; resize: vertical; }
       .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
       .modal-actions button {
@@ -321,8 +322,79 @@
         background: #8a2be2; color: #fff; border-color: #8a2be2;
       }
       .modal-actions .primary:hover { background: #7b25cc; }
-      .rating-row { display: flex; gap: 10px; }
-      .rating-row > div { flex: 1; }
+      .rating-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 6px;
+      }
+      .rating-item {
+        border: 1px solid rgba(138, 43, 226, 0.22);
+        border-radius: 10px;
+        background: linear-gradient(180deg, rgba(35, 24, 71, 0.28), rgba(22, 16, 45, 0.16));
+        padding: 12px;
+      }
+      .rating-item label {
+        margin: 0 0 10px;
+        font-size: 15px;
+        line-height: 1.35;
+      }
+      .rating-scale {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .rating-choice {
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid rgba(138, 43, 226, 0.35);
+        background: rgba(22, 16, 45, 0.7);
+        color: #e6dfd8;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+      }
+      .rating-choice:hover {
+        border-color: rgba(158, 106, 230, 0.8);
+        background: rgba(58, 38, 112, 0.72);
+      }
+      .rating-choice:focus-visible {
+        outline: 2px solid #b38cff;
+        outline-offset: 1px;
+      }
+      .rating-choice.selected {
+        border-color: #a66cff;
+        background: linear-gradient(180deg, #8a2be2, #6f1fc2);
+        color: #fff;
+        box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.28);
+      }
+      .rating-choice:active {
+        transform: translateY(1px);
+      }
+      .rating-hint {
+        margin-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #9e8fc1;
+      }
+      .rating-hidden {
+        display: none;
+      }
+      @media (max-width: 640px) {
+        .modal {
+          padding: 16px;
+          width: 96vw;
+        }
+        .rating-item label {
+          font-size: 14px;
+        }
+        .rating-choice {
+          height: 42px;
+          font-size: 13px;
+        }
+      }
 
       /* empty state */
       .empty-state {
@@ -413,18 +485,42 @@
     <div class="modal-overlay" id="feedback-modal">
       <div class="modal">
         <h2 id="modal-title">Feedback</h2>
-        <div class="rating-row">
-          <div>
-            <label for="rating-correctness">Correctness (1-5)</label>
-            <input id="rating-correctness" type="number" min="1" max="5" required />
+        <div class="rating-grid">
+          <div class="rating-item">
+            <label>I made progress on this step</label>
+            <div class="rating-scale" data-rating-target="rating-perceived-progress" role="radiogroup" aria-label="I made progress on this step" tabindex="0">
+              <button type="button" class="rating-choice" data-rating-target="rating-perceived-progress" data-rating-value="1" aria-pressed="false">1</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-perceived-progress" data-rating-value="2" aria-pressed="false">2</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-perceived-progress" data-rating-value="3" aria-pressed="false">3</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-perceived-progress" data-rating-value="4" aria-pressed="false">4</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-perceived-progress" data-rating-value="5" aria-pressed="false">5</button>
+            </div>
+            <div class="rating-hint"><span>Not really</span><span>A lot</span></div>
+            <input id="rating-perceived-progress" class="rating-hidden" type="hidden" />
           </div>
-          <div>
-            <label for="rating-helpfulness">Helpfulness (1-5)</label>
-            <input id="rating-helpfulness" type="number" min="1" max="5" required />
+          <div class="rating-item">
+            <label>I understand this better now</label>
+            <div class="rating-scale" data-rating-target="rating-clarity-understanding" role="radiogroup" aria-label="I understand this better now" tabindex="0">
+              <button type="button" class="rating-choice" data-rating-target="rating-clarity-understanding" data-rating-value="1" aria-pressed="false">1</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-clarity-understanding" data-rating-value="2" aria-pressed="false">2</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-clarity-understanding" data-rating-value="3" aria-pressed="false">3</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-clarity-understanding" data-rating-value="4" aria-pressed="false">4</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-clarity-understanding" data-rating-value="5" aria-pressed="false">5</button>
+            </div>
+            <div class="rating-hint"><span>Still unclear</span><span>Much clearer</span></div>
+            <input id="rating-clarity-understanding" class="rating-hidden" type="hidden" />
           </div>
-          <div>
-            <label for="rating-clarity">Clarity (1-5)</label>
-            <input id="rating-clarity" type="number" min="1" max="5" required />
+          <div class="rating-item">
+            <label>This response fit what I needed</label>
+            <div class="rating-scale" data-rating-target="rating-engagement-fit" role="radiogroup" aria-label="This response fit what I needed" tabindex="0">
+              <button type="button" class="rating-choice" data-rating-target="rating-engagement-fit" data-rating-value="1" aria-pressed="false">1</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-engagement-fit" data-rating-value="2" aria-pressed="false">2</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-engagement-fit" data-rating-value="3" aria-pressed="false">3</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-engagement-fit" data-rating-value="4" aria-pressed="false">4</button>
+              <button type="button" class="rating-choice" data-rating-target="rating-engagement-fit" data-rating-value="5" aria-pressed="false">5</button>
+            </div>
+            <div class="rating-hint"><span>Missed me</span><span>Perfect fit</span></div>
+            <input id="rating-engagement-fit" class="rating-hidden" type="hidden" />
           </div>
         </div>
         <label for="free-text">Comments (optional)</label>
@@ -459,11 +555,58 @@
       let activeFeedbackTurnId    = null;
       let activeFeedbackTurnIndex = null;
       let sending = false;
+      const ratingChoices = Array.from(document.querySelectorAll(".rating-choice"));
+      const ratingScales = Array.from(document.querySelectorAll(".rating-scale"));
 
       /* ── helpers ── */
       function scrollToBottom() {
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
+
+      function setRatingValue(targetId, value) {
+        const hidden = document.getElementById(targetId);
+        if (!hidden) return;
+        hidden.value = String(value);
+        ratingChoices
+          .filter((btn) => btn.dataset.ratingTarget === targetId)
+          .forEach((btn) => {
+            const selected = Number(btn.dataset.ratingValue) === Number(value);
+            btn.classList.toggle("selected", selected);
+            btn.setAttribute("aria-pressed", selected ? "true" : "false");
+          });
+      }
+
+      function resetFeedbackRatings() {
+        ["rating-perceived-progress", "rating-clarity-understanding", "rating-engagement-fit"].forEach((id) => {
+          const hidden = document.getElementById(id);
+          if (hidden) hidden.value = "";
+        });
+        ratingChoices.forEach((btn) => {
+          btn.classList.remove("selected");
+          btn.setAttribute("aria-pressed", "false");
+        });
+      }
+
+      ratingChoices.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const targetId = btn.dataset.ratingTarget;
+          const value = Number(btn.dataset.ratingValue);
+          if (!targetId || Number.isNaN(value)) return;
+          setRatingValue(targetId, value);
+        });
+      });
+
+      ratingScales.forEach((scale) => {
+        scale.addEventListener("keydown", (e) => {
+          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+          const targetId = scale.dataset.ratingTarget;
+          if (!targetId) return;
+          const current = Number(document.getElementById(targetId)?.value || 0);
+          const next = e.key === "ArrowRight" ? Math.min(5, current + 1 || 1) : Math.max(1, current - 1 || 5);
+          setRatingValue(targetId, next);
+          e.preventDefault();
+        });
+      });
 
       /* ── Markdown + highlight.js + KaTeX rendering ── */
 
@@ -804,6 +947,7 @@
         activeFeedbackTurnId = turnId;
         activeFeedbackTurnIndex = turnIndex;
         modalTitle.textContent = `Rate turn ${turnIndex ?? ""}`;
+        resetFeedbackRatings();
         feedbackModal.classList.add("open");
       }
 
@@ -819,12 +963,16 @@
         if (!activeFeedbackTurnId) return;
         const payload = {
           user_id: userIdInput.value.trim(),
-          rating_correctness: parseInt(document.getElementById("rating-correctness").value, 10),
-          rating_helpfulness: parseInt(document.getElementById("rating-helpfulness").value, 10),
-          rating_clarity: parseInt(document.getElementById("rating-clarity").value, 10),
+          rating_perceived_progress: parseInt(document.getElementById("rating-perceived-progress").value, 10),
+          rating_clarity_understanding: parseInt(document.getElementById("rating-clarity-understanding").value, 10),
+          rating_engagement_fit: parseInt(document.getElementById("rating-engagement-fit").value, 10),
           free_text: document.getElementById("free-text").value.trim() || null,
         };
-        if (isNaN(payload.rating_correctness) || isNaN(payload.rating_helpfulness) || isNaN(payload.rating_clarity)) {
+        if (
+          isNaN(payload.rating_perceived_progress)
+          || isNaN(payload.rating_clarity_understanding)
+          || isNaN(payload.rating_engagement_fit)
+        ) {
           alert("Please fill in all three ratings (1-5).");
           return;
         }
@@ -852,9 +1000,7 @@
           }
           feedbackModal.classList.remove("open");
           // reset modal inputs
-          document.getElementById("rating-correctness").value = "";
-          document.getElementById("rating-helpfulness").value = "";
-          document.getElementById("rating-clarity").value = "";
+          resetFeedbackRatings();
           document.getElementById("free-text").value = "";
         } catch (err) {
           alert("Feedback request failed.");
